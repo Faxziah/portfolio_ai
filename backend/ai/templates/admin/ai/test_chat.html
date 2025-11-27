@@ -1,0 +1,264 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block title %}Test AI Chat | Portfolio Admin{% endblock %}
+
+{% block extrastyle %}
+<style>
+  .chat-container {
+    max-width: 1000px;
+    margin: 20px auto;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+  }
+  .chat-box {
+    height: 500px;
+    overflow-y: auto;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 15px;
+    margin-bottom: 15px;
+  }
+  .message {
+    margin-bottom: 15px;
+    padding: 10px 15px;
+    border-radius: 8px;
+    max-width: 80%;
+  }
+  .user-message {
+    background: #007bff;
+    color: white;
+    margin-left: auto;
+    text-align: right;
+  }
+  .ai-message {
+    background: #e9ecef;
+    color: #212529;
+  }
+  .system-message {
+    background: #fff3cd;
+    color: #856404;
+    font-size: 0.9em;
+    max-width: 100%;
+    text-align: center;
+  }
+  .input-area {
+    display: flex;
+    gap: 10px;
+  }
+  .input-area textarea {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    resize: vertical;
+    min-height: 60px;
+    font-family: inherit;
+  }
+  .input-area button {
+    padding: 10px 20px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  .input-area button:hover {
+    background: #0056b3;
+  }
+  .input-area button:disabled {
+    background: #6c757d;
+    cursor: not-allowed;
+  }
+  .controls {
+    margin-bottom: 15px;
+    display: flex;
+    gap: 10px;
+  }
+  .controls button {
+    padding: 8px 15px;
+    background: #6c757d;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .controls button:hover {
+    background: #5a6268;
+  }
+  .session-info {
+    background: white;
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 15px;
+    font-size: 0.9em;
+    color: #6c757d;
+  }
+  .loading {
+    text-align: center;
+    color: #007bff;
+    margin: 10px 0;
+  }
+  pre {
+    background: #f8f9fa;
+    padding: 10px;
+    border-radius: 4px;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<h1>🤖 Test AI Chat (Gemini API)</h1>
+
+<div class="chat-container">
+  <div class="session-info">
+    <strong>Session ID:</strong> <span id="session-id">Not started</span><br>
+    <strong>Model:</strong> Gemini 2.0 Flash<br>
+    <strong>Resume:</strong> Sent on first message
+  </div>
+  
+  <div class="controls">
+    <button onclick="clearChat()">🗑️ Clear Chat</button>
+    <button onclick="newSession()">🔄 New Session</button>
+  </div>
+
+  <div class="chat-box" id="chat-box">
+    <div class="message system-message">
+      👋 Welcome! Send your first message to start chatting with Gemini AI.
+    </div>
+  </div>
+
+  <div class="loading" id="loading" style="display:none;">
+    ⏳ AI is thinking...
+  </div>
+
+  <div class="input-area">
+    <textarea id="user-input" placeholder="Ask me about the portfolio owner..."></textarea>
+    <button onclick="sendMessage()" id="send-btn">Send</button>
+  </div>
+</div>
+
+<script>
+let sessionId = null;
+let chatHistory = [];
+
+function addMessage(type, content) {
+  const chatBox = document.getElementById('chat-box');
+  const messageDiv = document.createElement('div');
+  messageDiv.className = `message ${type}-message`;
+  
+  if (type === 'ai') {
+    // Format AI response with line breaks and code blocks
+    content = content
+      .replace(/\n/g, '<br>')
+      .replace(/```(.*?)```/gs, '<pre>$1</pre>');
+  }
+  
+  messageDiv.innerHTML = content;
+  chatBox.appendChild(messageDiv);
+  chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+function showLoading(show) {
+  document.getElementById('loading').style.display = show ? 'block' : 'none';
+  document.getElementById('send-btn').disabled = show;
+}
+
+async function sendMessage() {
+  const input = document.getElementById('user-input');
+  const message = input.value.trim();
+  
+  if (!message) return;
+  
+  addMessage('user', message);
+  input.value = '';
+  showLoading(true);
+  
+  try {
+    const response = await fetch('/api/ai/chat/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': getCookie('csrftoken')
+      },
+      body: JSON.stringify({
+        message: message,
+        chat_history: chatHistory,
+        session_id: sessionId
+      })
+    });
+    
+    const data = await response.json();
+    
+    if (!response.ok) {
+      throw new Error(data.error || 'Failed to get response');
+    }
+    
+    // Update session ID
+    if (data.session_id && !sessionId) {
+      sessionId = data.session_id;
+      document.getElementById('session-id').textContent = sessionId;
+      addMessage('system', '✅ Session started. Resume sent to AI.');
+    }
+    
+    // Add AI response
+    addMessage('ai', data.response);
+    
+    // Update chat history
+    chatHistory.push(
+      { role: 'user', parts: [message] },
+      { role: 'model', parts: [data.response] }
+    );
+    
+  } catch (error) {
+    addMessage('system', `❌ Error: ${error.message}`);
+  } finally {
+    showLoading(false);
+  }
+}
+
+function clearChat() {
+  const chatBox = document.getElementById('chat-box');
+  chatBox.innerHTML = '<div class="message system-message">Chat cleared. Session continues.</div>';
+}
+
+function newSession() {
+  sessionId = null;
+  chatHistory = [];
+  document.getElementById('session-id').textContent = 'Not started';
+  clearChat();
+  document.getElementById('chat-box').innerHTML = 
+    '<div class="message system-message">👋 New session started. Send your first message.</div>';
+}
+
+function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+    const cookies = document.cookie.split(';');
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.substring(0, name.length + 1) === (name + '=')) {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
+    }
+  }
+  return cookieValue;
+}
+
+// Allow Enter to send (Shift+Enter for new line)
+document.getElementById('user-input').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  }
+});
+</script>
+{% endblock %}
+

@@ -1,0 +1,23 @@
+# Claude Code settings (local, not for Git)
+.claude/
+/.idea
+
+*.env
+.env
+backend/.env
+frontend/.env
+backend/db.sqlite3
+*.sqlite3
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+venv/
+env/
+ENV/
+
+# Real personal data (not for Git)
+backend/resume/management/commands/fill_resume_data_real.py
+/frontend/node_modules
+/frontend/.next
