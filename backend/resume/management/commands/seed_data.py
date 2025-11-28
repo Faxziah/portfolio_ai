@@ -122,7 +122,7 @@ class Command(BaseCommand):
             {'key': 'aiChatSubtitle', 'en': 'Ask me about this portfolio', 'ru': 'Спросите меня о резюме', 'zh': '询问我有关简历的问题'},
             {'key': 'aiChatPlaceholder', 'en': 'Ask about experience, skills...', 'ru': 'Спросите об опыте, навыках...', 'zh': '询问经验、技能...'},
             {'key': 'aiChatSend', 'en': 'Send', 'ru': 'Отправить', 'zh': '发送'},
-            {'key': 'aiChatWelcome', 'en': 'Hi! I\'m an AI assistant. Ask me about experience, skills, and projects of {name}!', 'ru': 'Привет! Я AI ассистент. Спросите меня об опыте, навыках и проектах {name}!', 'zh': '你好！我是AI助手。询问我关于{name}的经验、技能和项目！'},
+            {'key': 'aiChatWelcome', 'en': 'Hi! I\'m an AI assistant. Ask me about experience, skills, and projects of {name}!', 'ru': 'Привет! Я ИИ ассистент. Спросите меня об опыте, навыках и проектах {name}!', 'zh': '你好！我是AI助手。询问我关于{name}的经验、技能和项目！'},
             {'key': 'aiChatError', 'en': 'Sorry, I encountered an error. Please try again.', 'ru': 'Извините, произошла ошибка. Пожалуйста, попробуйте снова.', 'zh': '抱歉，发生错误。请重试。'},
             {'key': 'aiChatNoApiKey', 'en': 'Sorry, I encountered an error. No API key. Visit https://aistudio.google.com/app/apikey', 'ru': 'Извините, произошла ошибка. API ключ не настроен. Посетите https://aistudio.google.com/app/apikey', 'zh': '抱歉，发生错误。未配置API密钥。请访问 https://aistudio.google.com/app/apikey'},
             
