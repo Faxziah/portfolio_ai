@@ -4,7 +4,7 @@ import uuid
 
 class AIChatLog(models.Model):
     """Log all AI chat interactions."""
-    session_id = models.UUIDField(default=uuid.uuid4, db_index=True)
+    session_id = models.CharField(max_length=255, db_index=True)
     user_message = models.TextField()
     ai_response = models.TextField()
     language = models.CharField(max_length=10, default='en')
