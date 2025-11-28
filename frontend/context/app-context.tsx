@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, useEffect, type ReactNode } from "react"
 import { type Language, type Translations } from "@/lib/types"
-import { fetchResume, type ResumeData, type SiteLanguage, type Settings } from "@/lib/api"
+import { fetchResume, fetchCsrfToken, type ResumeData, type SiteLanguage, type Settings } from "@/lib/api"
 import { API_BASE_URL } from "@/lib/constants"
 
 interface AppContextType {
@@ -113,8 +113,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
     document.documentElement.classList.toggle("dark", initialTheme === "dark")
     document.documentElement.setAttribute("data-color-scheme", "blue")
 
+    // Fetch CSRF token for POST requests
+    fetchCsrfToken()
+
     // Load settings first to get default language and site languages
-    fetch(`${API_BASE_URL}/api/settings/`)
+    fetch(`${API_BASE_URL}/api/settings/`, { credentials: "include" })
       .then((res) => res.json())
       .then((data: Settings) => {
         if (data.theme) {
@@ -135,7 +138,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         setLanguage(initialLang)
 
         // Load translations
-        fetch(`${API_BASE_URL}/api/translations/?lang=${initialLang}`)
+        fetch(`${API_BASE_URL}/api/translations/?lang=${initialLang}`, { credentials: "include" })
           .then((res) => res.json())
           .then((translationsData) => {
             setTranslations(translationsData)

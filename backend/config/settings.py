@@ -129,10 +129,13 @@ CORS_ALLOWED_ORIGIN_REGEXES = [
 ]
 CORS_ALLOW_CREDENTIALS = True
 
-# CSRF trusted origins for production
+# CSRF settings for AJAX requests
 CSRF_TRUSTED_ORIGINS = os.getenv(
-    "CSRF_TRUSTED_ORIGINS", "http://localhost:8082,http://localhost:3000"
+    "CSRF_TRUSTED_ORIGINS", "http://localhost:8082,http://localhost:3000,http://portfolio.swap-master.ru"
 ).split(",")
+CSRF_COOKIE_HTTPONLY = False  # Allow JavaScript to read csrftoken cookie
+CSRF_COOKIE_SAMESITE = 'Lax'
+CSRF_USE_SESSIONS = False
 
 REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": [

@@ -1,5 +1,26 @@
 import { API_BASE_URL, API_ENDPOINTS } from "./constants"
 
+// Get CSRF token from cookie
+function getCookie(name: string): string | null {
+  if (typeof document === 'undefined') return null
+  const value = `; ${document.cookie}`
+  const parts = value.split(`; ${name}=`)
+  if (parts.length === 2) return parts.pop()?.split(';').shift() || null
+  return null
+}
+
+// Fetch CSRF token from server
+export async function fetchCsrfToken(): Promise<void> {
+  try {
+    await fetch(`${API_BASE_URL}${API_ENDPOINTS.CSRF}`, {
+      method: "GET",
+      credentials: "include",
+    })
+  } catch (error) {
+    console.error("Failed to fetch CSRF token:", error)
+  }
+}
+
 export interface Language {
   id: number
   name: string
@@ -112,6 +133,7 @@ export async function fetchResume(lang: string = "en"): Promise<ResumeData> {
     headers: {
       "Content-Type": "application/json",
     },
+    credentials: "include",
   })
 
   if (!response.ok) {
@@ -127,11 +149,18 @@ export async function sendChatMessage(
   sessionId?: string,
   language: string = "en"
 ): Promise<{ response: string; session_id: string }> {
+  const csrftoken = getCookie('csrftoken')
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+  }
+  if (csrftoken) {
+    headers["X-CSRFToken"] = csrftoken
+  }
+
   const response = await fetch(`${API_BASE_URL}${API_ENDPOINTS.AI_CHAT}`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers,
+    credentials: "include",
     body: JSON.stringify({
       message,
       chat_history: chatHistory,

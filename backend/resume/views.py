@@ -2,6 +2,8 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework import status
+from django.views.decorators.csrf import ensure_csrf_cookie
+from django.middleware.csrf import get_token
 from .models import Resume, Language, Skill, Experience, Education, Certificate, Project, ContactInfo, Setting, Translation, Visit
 from .serializers import (
     LanguageSerializer, ExperienceSerializer,
@@ -288,9 +290,20 @@ def get_translations(request):
     Returns: { "en": {"certificates": "Certifications"}, "ru": {...} }
     """
     lang = request.GET.get('lang', 'en')
-    
+
     translations = {}
     for t in Translation.objects.filter(language=lang):
         translations[t.key] = t.value
-    
+
     return Response(translations)
+
+
+@ensure_csrf_cookie
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def get_csrf_token(request):
+    """
+    Get CSRF token for AJAX requests.
+    This endpoint sets the csrftoken cookie and returns the token value.
+    """
+    return Response({'csrftoken': get_token(request)})
