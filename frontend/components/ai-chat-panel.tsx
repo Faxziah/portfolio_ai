@@ -21,9 +21,18 @@ interface AIChatPanelProps {
   onClose: () => void
 }
 
+// Generate valid UUID v4
+function generateUUID(): string {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    const r = Math.random() * 16 | 0
+    const v = c === 'x' ? r : (r & 0x3 | 0x8)
+    return v.toString(16)
+  })
+}
+
 export function AIChatPanel({ isOpen, onClose }: AIChatPanelProps) {
   const { t, resumeData, language } = useApp()
-  
+
   const getWelcomeMessage = () => {
     const baseMessage = t("aiChatWelcome")
     if (resumeData?.firstname && resumeData?.lastname) {
@@ -44,7 +53,7 @@ export function AIChatPanel({ isOpen, onClose }: AIChatPanelProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    setSessionId(crypto.randomUUID?.() || Math.random().toString(36).substring(2) + Date.now().toString(36))
+    setSessionId(crypto.randomUUID?.() || generateUUID())
     setMessages([
       {
         role: "assistant",
