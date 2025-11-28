@@ -44,7 +44,7 @@ export function AIChatPanel({ isOpen, onClose }: AIChatPanelProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    setSessionId(crypto.randomUUID())
+    setSessionId(crypto.randomUUID?.() || Math.random().toString(36).substring(2) + Date.now().toString(36))
     setMessages([
       {
         role: "assistant",
