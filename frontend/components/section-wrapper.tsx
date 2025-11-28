@@ -16,7 +16,7 @@ export function SectionWrapper({ id, title, children, className, background = "d
     <section
       id={id}
       className={cn(
-        "py-20",
+        "py-20 scroll-mt-20",
         background === "muted" ? "bg-muted/30" : "",
         className
       )}

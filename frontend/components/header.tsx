@@ -30,11 +30,18 @@ export function Header() {
     }
   }
 
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    })
+  }
+
   return (
     <header className="fixed top-0 left-0 right-0 z-50 glass">
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="rounded-[12px]">
+          <div className="rounded-[12px] cursor-pointer" onClick={scrollToTop}>
             <Image src="/logo.png" alt={name || "Logo"} width={48} height={48} priority className="object-contain rounded-[12px]" />
           </div>
         </div>

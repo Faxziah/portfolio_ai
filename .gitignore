@@ -1,5 +1,6 @@
 # Claude Code settings (local, not for Git)
 .claude/
+.serena/
 /.idea
 
 *.env
