@@ -121,7 +121,7 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 CORS_ALLOWED_ORIGINS = os.getenv(
-    "CORS_ALLOWED_ORIGINS", "http://localhost:3000,http://localhost:8002"
+    "CORS_ALLOWED_ORIGINS", "http://localhost:3000,http://localhost:8082"
 ).split(",")
 CORS_ALLOWED_ORIGIN_REGEXES = [
     r"^https://.*\.devtunnels\.ms$",
