@@ -58,29 +58,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "config.wsgi.application"
 
-DATABASE_URL = os.getenv("DATABASE_URL")
-if DATABASE_URL:
-    import re
-    match = re.match(r"postgres(ql)?://(.+):(.+)@(.+):(\d+)/(.+)", DATABASE_URL)
-    if match:
-        DATABASES = {
-            "default": {
-                "ENGINE": "django.db.backends.postgresql",
-                "NAME": match.group(6),
-                "USER": match.group(2),
-                "PASSWORD": match.group(3),
-                "HOST": match.group(4),
-                "PORT": match.group(5),
-            }
-        }
-    else:
-        DATABASES = {
-            "default": {
-                "ENGINE": "django.db.backends.sqlite3",
-                "NAME": BASE_DIR / "db.sqlite3",
-            }
-        }
-elif os.getenv("DB_NAME"):
+if os.getenv("DB_NAME"):
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.postgresql",
