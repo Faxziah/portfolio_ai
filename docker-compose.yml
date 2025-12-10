@@ -1,17 +1,21 @@
 services:
-  db:
+  postgres:
     image: postgres:16
     container_name: portfolio_db
+    env_file:
+      - ./backend/.env
     environment:
-      POSTGRES_DB: portfolio
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      DB_HOST: postgres
+      DB_PORT: 5432
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
-      - "5434:5432"
+      - "127.0.0.1:5434:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER}"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -32,10 +36,17 @@ services:
     ports:
       - "8083:8000"
     depends_on:
-      db:
+      postgres:
         condition: service_healthy
     env_file:
       - ./backend/.env
+    environment:
+      DEBUG: False
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      DB_HOST: postgres
+      DB_PORT: 5432
 
   frontend:
     build:
