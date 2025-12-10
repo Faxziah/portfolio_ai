@@ -2,14 +2,10 @@ services:
   postgres:
     image: postgres:16
     container_name: portfolio_db
-    env_file:
-      - ./backend/.env
     environment:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
-      DB_HOST: postgres
-      DB_PORT: 5432
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
@@ -42,11 +38,6 @@ services:
       - ./backend/.env
     environment:
       DEBUG: False
-      POSTGRES_DB: ${DB_NAME}
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-      DB_HOST: postgres
-      DB_PORT: 5432
 
   frontend:
     build:
