@@ -13,8 +13,13 @@ class Command(BaseCommand):
     help = 'Seed database with John Doe test data'
     
     def handle(self, *args, **options):
+        # Check if Resume table already has data - skip seeding if not empty
+        if Resume.objects.exists():
+            self.stdout.write(self.style.WARNING('⏭️  Database already has resume data. Skipping seed.'))
+            return
+
         self.stdout.write('Seeding database...')
-        
+
         # Create superuser
         self.create_superuser()
         
