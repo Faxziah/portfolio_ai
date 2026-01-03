@@ -1,0 +1,508 @@
+# Russian translations for Portfolio Admin
+# Copyright (C) 2024
+# This file is distributed under the same license as the Portfolio project.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Portfolio 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-01-03 12:00+0000\n"
+"PO-Revision-Date: 2026-01-03 12:00+0000\n"
+"Last-Translator: Admin <admin@example.com>\n"
+"Language-Team: Russian <ru@example.com>\n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n%100>=11 && n%100<=14)? 2 : 3);\n"
+
+# Model names
+msgid "Resume"
+msgstr "Резюме"
+
+msgid "Resumes"
+msgstr "Резюме"
+
+msgid "Language"
+msgstr "Язык"
+
+msgid "Languages"
+msgstr "Языки"
+
+msgid "Skill"
+msgstr "Навык"
+
+msgid "Skills"
+msgstr "Навыки"
+
+msgid "Experience"
+msgstr "Опыт работы"
+
+msgid "Education"
+msgstr "Образование"
+
+msgid "Certificate"
+msgstr "Сертификат"
+
+msgid "Certificates"
+msgstr "Сертификаты"
+
+msgid "Project"
+msgstr "Проект"
+
+msgid "Projects"
+msgstr "Проекты"
+
+msgid "Contact"
+msgstr "Контакт"
+
+msgid "Contacts"
+msgstr "Контакты"
+
+msgid "Setting"
+msgstr "Настройка"
+
+msgid "Settings"
+msgstr "Настройки"
+
+msgid "Translation"
+msgstr "Перевод"
+
+msgid "Translations"
+msgstr "Переводы"
+
+msgid "Visit"
+msgstr "Визит"
+
+msgid "Visits"
+msgstr "Визиты"
+
+msgid "Carousel Item"
+msgstr "Элемент карусели"
+
+msgid "Carousel Items"
+msgstr "Элементы карусели"
+
+msgid "Review"
+msgstr "Отзыв"
+
+msgid "Reviews"
+msgstr "Отзывы"
+
+msgid "Price"
+msgstr "Цена"
+
+msgid "Prices"
+msgstr "Цены"
+
+msgid "Document"
+msgstr "Документ"
+
+msgid "Documents"
+msgstr "Документы"
+
+# Admin interface
+msgid "Site administration"
+msgstr "Администрирование сайта"
+
+msgid "Django administration"
+msgstr "Администрирование Django"
+
+msgid "Welcome,"
+msgstr "Добро пожаловать,"
+
+msgid "Log out"
+msgstr "Выйти"
+
+msgid "View site"
+msgstr "Открыть сайт"
+
+msgid "Home"
+msgstr "Главная"
+
+msgid "Add"
+msgstr "Добавить"
+
+msgid "Change"
+msgstr "Изменить"
+
+msgid "Delete"
+msgstr "Удалить"
+
+msgid "Save"
+msgstr "Сохранить"
+
+msgid "Save and continue editing"
+msgstr "Сохранить и продолжить редактирование"
+
+msgid "Save and add another"
+msgstr "Сохранить и добавить ещё"
+
+msgid "Delete selected %(verbose_name_plural)s"
+msgstr "Удалить выбранные %(verbose_name_plural)s"
+
+msgid "Recent actions"
+msgstr "Последние действия"
+
+msgid "My actions"
+msgstr "Мои действия"
+
+msgid "None available"
+msgstr "Нет доступных"
+
+msgid "Unknown content"
+msgstr "Неизвестный контент"
+
+msgid "Search"
+msgstr "Поиск"
+
+msgid "Filter"
+msgstr "Фильтр"
+
+msgid "Clear all filters"
+msgstr "Сбросить все фильтры"
+
+msgid "Select all"
+msgstr "Выбрать все"
+
+msgid "action"
+msgstr "действие"
+
+msgid "Action"
+msgstr "Действие"
+
+msgid "Go"
+msgstr "Выполнить"
+
+msgid "Click here to select all objects across all pages."
+msgstr "Нажмите здесь, чтобы выбрать все объекты на всех страницах."
+
+msgid "Select %(total_count)s of %(total_count)s %(module_name)s"
+msgstr "Выбрать %(total_count)s из %(total_count)s %(module_name)s"
+
+msgid "Clear selection"
+msgstr "Очистить выбор"
+
+# Common field names
+msgid "name"
+msgstr "название"
+
+msgid "Name"
+msgstr "Название"
+
+msgid "value"
+msgstr "значение"
+
+msgid "Value"
+msgstr "Значение"
+
+msgid "description"
+msgstr "описание"
+
+msgid "Description"
+msgstr "Описание"
+
+msgid "order"
+msgstr "порядок"
+
+msgid "Order"
+msgstr "Порядок"
+
+msgid "language"
+msgstr "язык"
+
+msgid "created at"
+msgstr "создано"
+
+msgid "Created at"
+msgstr "Создано"
+
+msgid "updated at"
+msgstr "обновлено"
+
+msgid "Updated at"
+msgstr "Обновлено"
+
+msgid "type"
+msgstr "тип"
+
+msgid "Type"
+msgstr "Тип"
+
+msgid "title"
+msgstr "заголовок"
+
+msgid "Title"
+msgstr "Заголовок"
+
+msgid "text"
+msgstr "текст"
+
+msgid "Text"
+msgstr "Текст"
+
+msgid "author"
+msgstr "автор"
+
+msgid "Author"
+msgstr "Автор"
+
+msgid "stars"
+msgstr "звёзды"
+
+msgid "Stars"
+msgstr "Звёзды"
+
+msgid "price"
+msgstr "цена"
+
+msgid "currency"
+msgstr "валюта"
+
+msgid "Currency"
+msgstr "Валюта"
+
+# Authentication
+msgid "Username"
+msgstr "Имя пользователя"
+
+msgid "Password"
+msgstr "Пароль"
+
+msgid "Log in"
+msgstr "Войти"
+
+msgid "Forgotten your password or username?"
+msgstr "Забыли пароль или имя пользователя?"
+
+# Date/Time
+msgid "Date/time"
+msgstr "Дата/время"
+
+msgid "Date"
+msgstr "Дата"
+
+msgid "Time"
+msgstr "Время"
+
+msgid "Today"
+msgstr "Сегодня"
+
+msgid "Now"
+msgstr "Сейчас"
+
+msgid "Yesterday"
+msgstr "Вчера"
+
+msgid "Tomorrow"
+msgstr "Завтра"
+
+# Pagination
+msgid "Page"
+msgstr "Страница"
+
+msgid "of"
+msgstr "из"
+
+msgid "Show all"
+msgstr "Показать все"
+
+# Messages
+msgid "Successfully deleted %(count)d %(items)s."
+msgstr "Успешно удалено %(count)d %(items)s."
+
+msgid "was added successfully."
+msgstr "успешно добавлен."
+
+msgid "was changed successfully."
+msgstr "успешно изменён."
+
+msgid "was deleted successfully."
+msgstr "успешно удалён."
+
+# Confirmation
+msgid "Are you sure?"
+msgstr "Вы уверены?"
+
+msgid "Yes"
+msgstr "Да"
+
+msgid "No"
+msgstr "Нет"
+
+msgid "Cancel"
+msgstr "Отмена"
+
+# Errors
+msgid "Please correct the error below."
+msgstr "Пожалуйста, исправьте ошибку ниже."
+
+msgid "Please correct the errors below."
+msgstr "Пожалуйста, исправьте ошибки ниже."
+
+# Custom admin
+msgid "Portfolio Administration"
+msgstr "Администрирование портфолио"
+
+msgid "Portfolio"
+msgstr "Портфолио"
+
+msgid "My Resume"
+msgstr "Моё резюме"
+
+# Theme settings
+msgid "Theme Settings"
+msgstr "Настройки темы"
+
+msgid "Theme Preset"
+msgstr "Пресет темы"
+
+msgid "Custom Color (hex)"
+msgstr "Пользовательский цвет (hex)"
+
+msgid "Use custom color"
+msgstr "Использовать свой цвет"
+
+msgid "Blue Ocean"
+msgstr "Синий океан"
+
+msgid "Forest Green"
+msgstr "Лесной зелёный"
+
+msgid "Royal Purple"
+msgstr "Королевский пурпурный"
+
+msgid "Sunset Orange"
+msgstr "Оранжевый закат"
+
+msgid "Ruby Red"
+msgstr "Рубиново-красный"
+
+msgid "Cyan Blue"
+msgstr "Голубой"
+
+# Carousel
+msgid "Photo"
+msgstr "Фото"
+
+msgid "Video"
+msgstr "Видео"
+
+msgid "Upload Photo"
+msgstr "Загрузить фото"
+
+msgid "Upload Image"
+msgstr "Загрузить изображение"
+
+msgid "Item Info"
+msgstr "Информация"
+
+# Resume app name
+msgid "resume"
+msgstr "резюме"
+
+# Additional admin strings
+msgid "Change password"
+msgstr "Изменить пароль"
+
+msgid "View on site"
+msgstr "Открыть на сайте"
+
+msgid "History"
+msgstr "История"
+
+msgid "Select %s"
+msgstr "Выбрать %s"
+
+msgid "Select %s to change"
+msgstr "Выберите %s для изменения"
+
+msgid "Select %s to view"
+msgstr "Выберите %s для просмотра"
+
+msgid "0 of %(cnt)s selected"
+msgstr "Выбрано 0 из %(cnt)s"
+
+msgid "1 selected"
+msgstr "Выбрано 1"
+
+msgid "%(counter)s selected"
+msgstr "Выбрано %(counter)s"
+
+msgid "Items must be selected in order to perform actions on them. No items have been changed."
+msgstr "Необходимо выбрать элементы для выполнения действий. Элементы не изменены."
+
+msgid "Cannot delete %(name)s"
+msgstr "Невозможно удалить %(name)s"
+
+msgid "Are you sure you want to delete the selected %(objects_name)s? All of the following objects and their related items will be deleted:"
+msgstr "Вы уверены, что хотите удалить выбранные %(objects_name)s? Все следующие объекты и связанные элементы будут удалены:"
+
+msgid "Objects"
+msgstr "Объекты"
+
+msgid "Yes, I'm sure"
+msgstr "Да, я уверен"
+
+msgid "No, take me back"
+msgstr "Нет, вернуться"
+
+msgid "Delete?"
+msgstr "Удалить?"
+
+msgid "Deleting the %(object_name)s '%(escaped_object)s' would result in deleting related objects, but your account doesn't have permission to delete the following types of objects:"
+msgstr "Удаление %(object_name)s '%(escaped_object)s' приведёт к удалению связанных объектов, но у вашей учётной записи нет прав на удаление следующих типов объектов:"
+
+msgid "Deleting the %(object_name)s '%(escaped_object)s' would require deleting the following protected related objects:"
+msgstr "Удаление %(object_name)s '%(escaped_object)s' потребует удаления следующих защищённых связанных объектов:"
+
+msgid "Are you sure you want to delete the %(object_name)s \"%(escaped_object)s\"? All of the following related items will be deleted:"
+msgstr "Вы уверены, что хотите удалить %(object_name)s \"%(escaped_object)s\"? Все следующие связанные элементы будут удалены:"
+
+msgid "Delete multiple objects"
+msgstr "Удалить несколько объектов"
+
+msgid "View"
+msgstr "Просмотр"
+
+msgid "Add another %(verbose_name)s"
+msgstr "Добавить ещё %(verbose_name)s"
+
+msgid "Remove"
+msgstr "Удалить"
+
+msgid "Addition"
+msgstr "Добавление"
+
+msgid "Change:"
+msgstr "Изменение:"
+
+msgid "Deletion"
+msgstr "Удаление"
+
+msgid "action time"
+msgstr "время действия"
+
+msgid "user"
+msgstr "пользователь"
+
+msgid "content type"
+msgstr "тип содержимого"
+
+msgid "object id"
+msgstr "id объекта"
+
+msgid "object repr"
+msgstr "представление объекта"
+
+msgid "action flag"
+msgstr "тип действия"
+
+msgid "change message"
+msgstr "сообщение об изменении"
+
+msgid "log entry"
+msgstr "запись журнала"
+
+msgid "log entries"
+msgstr "записи журнала"

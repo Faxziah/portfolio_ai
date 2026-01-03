@@ -15,49 +15,18 @@ interface AppContextType {
   resumeData: ResumeData
   resumeError: Error | null
   siteLanguages: SiteLanguage[]
+  settings: Settings
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined)
 
-// Convert hex color to oklch for CSS variables
-function hexToOklch(hex: string): { l: number; c: number; h: number } {
-  // Remove # if present
+// Adjust color brightness
+function adjustBrightness(hex: string, percent: number): string {
   hex = hex.replace(/^#/, '')
-
-  // Parse hex to RGB
-  const r = parseInt(hex.slice(0, 2), 16) / 255
-  const g = parseInt(hex.slice(2, 4), 16) / 255
-  const b = parseInt(hex.slice(4, 6), 16) / 255
-
-  // Convert RGB to linear RGB
-  const toLinear = (c: number) => c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4)
-  const lr = toLinear(r)
-  const lg = toLinear(g)
-  const lb = toLinear(b)
-
-  // Convert linear RGB to XYZ (D65)
-  const x = 0.4124564 * lr + 0.3575761 * lg + 0.1804375 * lb
-  const y = 0.2126729 * lr + 0.7151522 * lg + 0.0721750 * lb
-  const z = 0.0193339 * lr + 0.1191920 * lg + 0.9503041 * lb
-
-  // Convert XYZ to Lab
-  const xn = 0.95047, yn = 1.0, zn = 1.08883
-  const f = (t: number) => t > 0.008856 ? Math.pow(t, 1/3) : (903.3 * t + 16) / 116
-  const fx = f(x / xn)
-  const fy = f(y / yn)
-  const fz = f(z / zn)
-
-  const labL = 116 * fy - 16
-  const labA = 500 * (fx - fy)
-  const labB = 200 * (fy - fz)
-
-  // Convert Lab to OKLab (approximation)
-  const l = labL / 100
-  const c = Math.sqrt(labA * labA + labB * labB) / 100
-  let h = Math.atan2(labB, labA) * (180 / Math.PI)
-  if (h < 0) h += 360
-
-  return { l: Math.max(0, Math.min(1, l * 0.8)), c: Math.max(0, Math.min(0.4, c * 0.3)), h }
+  const r = Math.min(255, Math.max(0, parseInt(hex.slice(0, 2), 16) + percent))
+  const g = Math.min(255, Math.max(0, parseInt(hex.slice(2, 4), 16) + percent))
+  const b = Math.min(255, Math.max(0, parseInt(hex.slice(4, 6), 16) + percent))
+  return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`
 }
 
 // Apply theme colors to CSS variables
@@ -65,21 +34,19 @@ function applyTheme(themeValue: string) {
   const root = document.documentElement
 
   if (themeValue.startsWith('#')) {
-    // Custom hex color
     root.setAttribute("data-color-scheme", "custom")
-    const { l, c, h } = hexToOklch(themeValue)
 
-    // Set primary color with variations for secondary and accent
-    const primaryL = Math.max(0.4, Math.min(0.7, l + 0.1))
-    const secondaryH = (h + 20) % 360
-    const accentH = (h - 10 + 360) % 360
+    // Use hex color directly for CSS variables
+    const primaryColor = themeValue
+    const secondaryColor = adjustBrightness(themeValue, -20)
+    const accentColor = adjustBrightness(themeValue, -40)
 
-    root.style.setProperty('--primary', `oklch(${primaryL.toFixed(2)} ${(c + 0.1).toFixed(2)} ${h.toFixed(0)})`)
-    root.style.setProperty('--secondary', `oklch(${(primaryL - 0.04).toFixed(2)} ${(c + 0.12).toFixed(2)} ${secondaryH.toFixed(0)})`)
-    root.style.setProperty('--accent', `oklch(${(primaryL - 0.07).toFixed(2)} ${(c + 0.13).toFixed(2)} ${accentH.toFixed(0)})`)
-    root.style.setProperty('--ring', `oklch(${primaryL.toFixed(2)} ${(c + 0.1).toFixed(2)} ${h.toFixed(0)})`)
-    root.style.setProperty('--sidebar-primary', `oklch(${primaryL.toFixed(2)} ${(c + 0.1).toFixed(2)} ${h.toFixed(0)})`)
-    root.style.setProperty('--sidebar-ring', `oklch(${primaryL.toFixed(2)} ${(c + 0.1).toFixed(2)} ${h.toFixed(0)})`)
+    root.style.setProperty('--primary', primaryColor)
+    root.style.setProperty('--secondary', secondaryColor)
+    root.style.setProperty('--accent', accentColor)
+    root.style.setProperty('--ring', primaryColor)
+    root.style.setProperty('--sidebar-primary', primaryColor)
+    root.style.setProperty('--sidebar-ring', primaryColor)
   } else {
     // Preset theme - remove custom styles and use CSS classes
     root.setAttribute("data-color-scheme", themeValue)
@@ -102,6 +69,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [translations, setTranslations] = useState<Translations>({})
   const [siteLanguages, setSiteLanguages] = useState<SiteLanguage[]>([])
   const [defaultLanguage, setDefaultLanguage] = useState<string>("en")
+  const [settings, setSettings] = useState<Settings>({})
 
   useEffect(() => {
     setMounted(true)
@@ -120,6 +88,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
     fetch(`${API_BASE_URL}/api/settings/`, { credentials: "include" })
       .then((res) => res.json())
       .then((data: Settings) => {
+        setSettings(data)
+
         if (data.theme) {
           setColorScheme(data.theme)
           applyTheme(data.theme)
@@ -239,7 +209,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AppContext.Provider value={{ language, setLanguage: handleSetLanguage, t, theme, toggleTheme, colorScheme, resumeData, resumeError, siteLanguages }}>
+    <AppContext.Provider value={{ language, setLanguage: handleSetLanguage, t, theme, toggleTheme, colorScheme, resumeData, resumeError, siteLanguages, settings }}>
       {children}
     </AppContext.Provider>
   )

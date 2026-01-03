@@ -1,15 +1,23 @@
 "use client"
 
+import { useState } from "react"
 import { Card } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
 import { useApp } from "@/context/app-context"
 import { SectionWrapper } from "@/components/section-wrapper"
+import { ChevronDown, ChevronUp } from "lucide-react"
 
 export function ExperienceSection() {
   const { t, resumeData } = useApp()
+  const [showAll, setShowAll] = useState(false)
 
   if (!resumeData?.experiences || resumeData.experiences.length === 0) {
     return null
   }
+
+  const experiences = resumeData.experiences
+  const displayedExperiences = showAll ? experiences : experiences.slice(0, 5)
+  const hasMore = experiences.length > 5
 
   return (
     <SectionWrapper id="experience" title={t("experienceTitle")}>
@@ -17,7 +25,7 @@ export function ExperienceSection() {
           <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-primary via-chart-2 to-chart-3 hidden md:block" />
 
           <div className="space-y-8">
-          {resumeData.experiences.map((exp) => (
+          {displayedExperiences.map((exp) => (
               <div key={exp.id} className="relative pl-0 md:pl-20">
                 <div className="absolute left-6 top-6 w-4 h-4 rounded-full bg-primary ring-4 ring-background hidden md:block" />
 
@@ -34,6 +42,28 @@ export function ExperienceSection() {
               </div>
             ))}
           </div>
+
+          {hasMore && (
+            <div className="text-center mt-8">
+              <Button
+                variant="outline"
+                onClick={() => setShowAll(!showAll)}
+                className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-background dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-10 rounded-md px-6 has-[>svg]:px-4 border-2 border-primary/50 hover:border-primary hover:bg-primary/10 hover:text-primary hover:scale-105 transition-all duration-300 shadow-sm hover:shadow-md cursor-pointer"
+              >
+                {showAll ? (
+                  <>
+                    {t("showLess")}
+                    <ChevronUp className="w-4 h-4" />
+                  </>
+                ) : (
+                  <>
+                    {t("showMore")}
+                    <ChevronDown className="w-4 h-4" />
+                  </>
+                )}
+              </Button>
+            </div>
+          )}
         </div>
     </SectionWrapper>
   )

@@ -88,10 +88,46 @@ export interface ContactInfo {
   icon?: string
 }
 
+export interface CarouselItem {
+  id: number
+  type: 'photo' | 'video'
+  title: string
+  photo_base64: string | null
+  photo_mime_type: string
+  video_url: string
+  order: number
+}
+
+export interface Review {
+  id: number
+  stars: number
+  text: string
+  author: string
+  order: number
+  created_at: string
+}
+
+export interface PriceItem {
+  id: number
+  name: string
+  price: string
+  currency: string
+  order: number
+}
+
+export interface DocumentItem {
+  id: number
+  description: string
+  photo_base64: string | null
+  photo_mime_type: string
+  order: number
+}
+
 export interface ResumeData {
   name: Record<string, string>
   firstname: Record<string, string>
   lastname: Record<string, string>
+  patronymic: Record<string, string>
   languages: Language[]
   skills: Record<string, string[]>
   skill_categories: SkillCategory[]
@@ -108,6 +144,10 @@ export interface ResumeData {
     languages_count: string
   }
   contact_info: ContactInfo[]
+  carousel: CarouselItem[]
+  reviews: Review[]
+  prices: PriceItem[]
+  documents: DocumentItem[]
   meta: {
     title: Record<string, string>
     description: Record<string, string>
@@ -124,6 +164,10 @@ export interface Settings {
   theme?: string
   site_languages?: SiteLanguage[]
   default_language?: string
+  show_carousel?: string
+  show_reviews?: string
+  show_prices?: string
+  show_documents?: string
   [key: string]: unknown
 }
 

@@ -1,12 +1,16 @@
 "use client"
 
+import { useState } from "react"
 import { Card } from "@/components/ui/card"
-import { GraduationCap, Award } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { GraduationCap, Award, ChevronDown, ChevronUp } from "lucide-react"
 import { useApp } from "@/context/app-context"
 import { SectionWrapper } from "@/components/section-wrapper"
 
 export function EducationSection() {
   const { t, resumeData } = useApp()
+  const [showAllEducation, setShowAllEducation] = useState(false)
+  const [showAllCertificates, setShowAllCertificates] = useState(false)
 
   const hasEducation = resumeData?.education && resumeData.education.length > 0
   const hasCertificates = resumeData?.certificates && resumeData.certificates.length > 0
@@ -14,6 +18,15 @@ export function EducationSection() {
   if (!hasEducation && !hasCertificates) {
     return null
   }
+
+  const education = resumeData?.education || []
+  const certificates = resumeData?.certificates || []
+
+  const displayedEducation = showAllEducation ? education : education.slice(0, 5)
+  const displayedCertificates = showAllCertificates ? certificates : certificates.slice(0, 5)
+
+  const hasMoreEducation = education.length > 5
+  const hasMoreCertificates = certificates.length > 5
 
   const title = `${t("educationTitle")} ${t("and")} ${t("certificationsTitle")}`
 
@@ -27,7 +40,7 @@ export function EducationSection() {
               {t("educationTitle")}
             </h3>
             <div className="grid gap-4">
-              {resumeData.education.map((edu) => (
+              {displayedEducation.map((edu) => (
                 <Card key={edu.id} className="p-6 hover:shadow-lg transition-shadow">
                   <div className="flex items-start justify-between">
                     <div>
@@ -44,6 +57,27 @@ export function EducationSection() {
                 </Card>
               ))}
             </div>
+            {hasMoreEducation && (
+              <div className="text-center mt-4">
+                <Button
+                  variant="outline"
+                  onClick={() => setShowAllEducation(!showAllEducation)}
+                  className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-background dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-10 rounded-md px-6 has-[>svg]:px-4 border-2 border-primary/50 hover:border-primary hover:bg-primary/10 hover:text-primary hover:scale-105 transition-all duration-300 shadow-sm hover:shadow-md cursor-pointer"
+                >
+                  {showAllEducation ? (
+                    <>
+                      {t("showLess")}
+                      <ChevronUp className="w-4 h-4" />
+                    </>
+                  ) : (
+                    <>
+                      {t("showMore")}
+                      <ChevronDown className="w-4 h-4" />
+                    </>
+                  )}
+                </Button>
+              </div>
+            )}
           </div>
         )}
 
@@ -54,7 +88,7 @@ export function EducationSection() {
               {t("certificationsTitle")}
             </h3>
             <div className="grid gap-4">
-              {resumeData.certificates.map((cert) => (
+              {displayedCertificates.map((cert) => (
                 <Card key={cert.id} className="p-6 hover:shadow-lg transition-shadow">
                   <div className="flex items-start justify-between">
                     <p className="text-lg font-semibold text-foreground">{cert.name}</p>
@@ -65,6 +99,27 @@ export function EducationSection() {
                 </Card>
               ))}
             </div>
+            {hasMoreCertificates && (
+              <div className="text-center mt-4">
+                <Button
+                  variant="outline"
+                  onClick={() => setShowAllCertificates(!showAllCertificates)}
+                  className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-background dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-10 rounded-md px-6 has-[>svg]:px-4 border-2 border-primary/50 hover:border-primary hover:bg-primary/10 hover:text-primary hover:scale-105 transition-all duration-300 shadow-sm hover:shadow-md cursor-pointer"
+                >
+                  {showAllCertificates ? (
+                    <>
+                      {t("showLess")}
+                      <ChevronUp className="w-4 h-4" />
+                    </>
+                  ) : (
+                    <>
+                      {t("showMore")}
+                      <ChevronDown className="w-4 h-4" />
+                    </>
+                  )}
+                </Button>
+              </div>
+            )}
           </div>
         )}
       </div>

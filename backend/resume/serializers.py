@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from .models import Resume, Language, Skill, Experience, Education, Certificate, Project, ContactInfo
+import base64
+from .models import Resume, Language, Skill, Experience, Education, Certificate, Project, ContactInfo, Carousel, Review, Price, Document
 
 
 class ResumeSerializer(serializers.ModelSerializer):
@@ -48,4 +49,42 @@ class ContactInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = ContactInfo
         fields = ["id", "type", "label", "value", "href", "order"]
+
+
+class CarouselSerializer(serializers.ModelSerializer):
+    photo_base64 = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Carousel
+        fields = ["id", "type", "description", "photo_base64", "photo_mime_type", "video_url", "order"]
+
+    def get_photo_base64(self, obj):
+        if obj.photo_data:
+            return base64.b64encode(obj.photo_data).decode('utf-8')
+        return None
+
+
+class ReviewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Review
+        fields = ["id", "stars", "text", "author", "order", "created_at"]
+
+
+class PriceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Price
+        fields = ["id", "name", "price", "currency", "order"]
+
+
+class DocumentSerializer(serializers.ModelSerializer):
+    photo_base64 = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Document
+        fields = ["id", "description", "photo_base64", "photo_mime_type", "order"]
+
+    def get_photo_base64(self, obj):
+        if obj.photo_data:
+            return base64.b64encode(obj.photo_data).decode('utf-8')
+        return None
 

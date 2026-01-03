@@ -2,9 +2,13 @@ from django.core.management.base import BaseCommand
 from django.contrib.auth import get_user_model
 from resume.models import (
     Setting, Translation, Resume, Experience, Education,
-    Certificate, Project, Language, ContactInfo, Skill
+    Certificate, Project, Language, ContactInfo, Skill,
+    Carousel, Review, Price, Document
 )
 import json
+import os
+import urllib.request
+import urllib.error
 
 User = get_user_model()
 
@@ -35,14 +39,18 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS('✅ Database seeded successfully!'))
     
     def create_superuser(self):
-        """Create default admin user."""
-        if not User.objects.filter(username='admin').exists():
+        """Create default admin user from environment variables."""
+        username = os.environ.get('DJANGO_SUPERUSER_USERNAME', 'admin')
+        email = os.environ.get('DJANGO_SUPERUSER_EMAIL', 'admin@example.com')
+        password = os.environ.get('DJANGO_SUPERUSER_PASSWORD', 'admin')
+
+        if not User.objects.filter(username=username).exists():
             User.objects.create_superuser(
-                username='admin',
-                email='admin@example.com',
-                password='admin'
+                username=username,
+                email=email,
+                password=password
             )
-            self.stdout.write('  ✓ Created superuser (admin/admin)')
+            self.stdout.write(f'  ✓ Created superuser ({username})')
         else:
             self.stdout.write('  - Superuser already exists')
     
@@ -72,6 +80,26 @@ class Command(BaseCommand):
                 'name': 'default_language',
                 'value': 'en',
                 'description': 'Default language code'
+            },
+            {
+                'name': 'show_carousel',
+                'value': '1',
+                'description': 'Show carousel section (1 = enabled, 0 = disabled)'
+            },
+            {
+                'name': 'show_reviews',
+                'value': '1',
+                'description': 'Show reviews section (1 = enabled, 0 = disabled)'
+            },
+            {
+                'name': 'show_prices',
+                'value': '1',
+                'description': 'Show prices section (1 = enabled, 0 = disabled)'
+            },
+            {
+                'name': 'show_documents',
+                'value': '1',
+                'description': 'Show documents section (1 = enabled, 0 = disabled)'
             },
         ]
         
@@ -138,10 +166,25 @@ class Command(BaseCommand):
             
             # Footer
             {'key': 'allRightsReserved', 'en': 'All rights reserved.', 'ru': 'Все права сохранены.', 'zh': '版权所有。'},
-            
+
             # AI Unavailable
             {'key': 'aiUnavailable', 'en': 'AI assistant is currently unavailable. Please try again later.', 'ru': 'ИИ-ассистент временно недоступен. Попробуйте позже.', 'zh': 'AI助手暂时不可用。请稍后再试。'},
-            
+
+            # New sections
+            {'key': 'carouselTitle', 'en': 'Gallery', 'ru': 'Галерея', 'zh': '图库'},
+            {'key': 'reviewsTitle', 'en': 'Reviews', 'ru': 'Отзывы', 'zh': '评价'},
+            {'key': 'pricesTitle', 'en': 'Services', 'ru': 'Услуги', 'zh': '服务'},
+            {'key': 'documentsTitle', 'en': 'Documents', 'ru': 'Документы', 'zh': '文件'},
+
+            # Show more/less buttons
+            {'key': 'showMore', 'en': 'Show more', 'ru': 'Показать еще', 'zh': '显示更多'},
+            {'key': 'showLess', 'en': 'Show less', 'ru': 'Скрыть', 'zh': '收起'},
+            {'key': 'showFull', 'en': 'Show full', 'ru': 'Показать полностью', 'zh': '显示全部'},
+
+            # Misc
+            {'key': 'noContent', 'en': 'No content', 'ru': 'Нет содержимого', 'zh': '无内容'},
+            {'key': 'noImage', 'en': 'No image', 'ru': 'Нет изображения', 'zh': '无图片'},
+
             # Months for date parsing (full names)
             {'key': 'month_1_full', 'en': 'january', 'ru': 'январь', 'zh': '一月'},
             {'key': 'month_2_full', 'en': 'february', 'ru': 'февраль', 'zh': '二月'},
@@ -723,7 +766,115 @@ class Command(BaseCommand):
             )
             if created:
                 created_contact += 1
-        
+
         if created_contact > 0:
             self.stdout.write(f'  ✓ Created {created_contact} contact info entries')
 
+        # Carousel items with placeholder images
+        self.create_carousel_items()
+
+        # Reviews
+        self.create_reviews()
+
+        # Prices
+        self.create_prices()
+
+    def download_placeholder_image(self, width, height, text=''):
+        """Download a placeholder image from placehold.co."""
+        url = f'https://placehold.co/{width}x{height}/3b82f6/ffffff/png?text={text or "Photo"}'
+        try:
+            with urllib.request.urlopen(url, timeout=10) as response:
+                return response.read(), 'image/png'
+        except (urllib.error.URLError, urllib.error.HTTPError) as e:
+            self.stdout.write(f'    Warning: Could not download placeholder image: {e}')
+            return None, None
+
+    def create_carousel_items(self):
+        """Create carousel test items."""
+        if Carousel.objects.exists():
+            self.stdout.write('  - Carousel items already exist')
+            return
+
+        carousel_items = [
+            {'description': 'Office Work', 'type': 'photo', 'order': 10, 'placeholder': '800x600', 'text': 'Office'},
+            {'description': 'Team Meeting', 'type': 'photo', 'order': 20, 'placeholder': '800x600', 'text': 'Team'},
+            {'description': 'Project Demo', 'type': 'photo', 'order': 30, 'placeholder': '800x600', 'text': 'Demo'},
+        ]
+
+        created_count = 0
+        for item in carousel_items:
+            photo_data, mime_type = self.download_placeholder_image(800, 600, item.get('text', ''))
+
+            carousel = Carousel(
+                description=item['description'],
+                type=item['type'],
+                order=item['order'],
+            )
+
+            if photo_data:
+                carousel.photo_data = photo_data
+                carousel.photo_mime_type = mime_type
+
+            carousel.save()
+            created_count += 1
+
+        self.stdout.write(f'  ✓ Created {created_count} carousel items')
+
+    def create_reviews(self):
+        """Create review test items."""
+        if Review.objects.exists():
+            self.stdout.write('  - Reviews already exist')
+            return
+
+        reviews_data = [
+            # English
+            {'stars': 5, 'text': 'Excellent developer! Delivered the project on time with great quality.', 'author': 'Michael Brown', 'language': 'en', 'order': 10},
+            {'stars': 5, 'text': 'Very professional and easy to work with. Highly recommended!', 'author': 'Sarah Johnson', 'language': 'en', 'order': 20},
+            {'stars': 4, 'text': 'Good communication and technical skills. Would hire again.', 'author': 'David Wilson', 'language': 'en', 'order': 30},
+            # Russian
+            {'stars': 5, 'text': 'Отличный разработчик! Сдал проект вовремя с высоким качеством.', 'author': 'Михаил Браун', 'language': 'ru', 'order': 10},
+            {'stars': 5, 'text': 'Очень профессиональный и приятный в работе. Рекомендую!', 'author': 'Сара Джонсон', 'language': 'ru', 'order': 20},
+            {'stars': 4, 'text': 'Хорошая коммуникация и технические навыки. Буду работать снова.', 'author': 'Дэвид Уилсон', 'language': 'ru', 'order': 30},
+            # Chinese
+            {'stars': 5, 'text': '优秀的开发者！按时交付了高质量的项目。', 'author': '迈克尔·布朗', 'language': 'zh', 'order': 10},
+            {'stars': 5, 'text': '非常专业，合作愉快。强烈推荐！', 'author': '萨拉·约翰逊', 'language': 'zh', 'order': 20},
+            {'stars': 4, 'text': '良好的沟通和技术能力。愿意再次合作。', 'author': '大卫·威尔逊', 'language': 'zh', 'order': 30},
+        ]
+
+        created_count = 0
+        for review_data in reviews_data:
+            Review.objects.create(**review_data)
+            created_count += 1
+
+        self.stdout.write(f'  ✓ Created {created_count} review entries')
+
+    def create_prices(self):
+        """Create price/service test items."""
+        if Price.objects.exists():
+            self.stdout.write('  - Prices already exist')
+            return
+
+        prices_data = [
+            # English
+            {'name': 'Website Development', 'price': 1500.00, 'currency': 'USD', 'language': 'en', 'order': 10},
+            {'name': 'Mobile App Development', 'price': 3000.00, 'currency': 'USD', 'language': 'en', 'order': 20},
+            {'name': 'API Integration', 'price': 500.00, 'currency': 'USD', 'language': 'en', 'order': 30},
+            {'name': 'Consulting (per hour)', 'price': 100.00, 'currency': 'USD', 'language': 'en', 'order': 40},
+            # Russian
+            {'name': 'Разработка веб-сайта', 'price': 150000.00, 'currency': 'RUB', 'language': 'ru', 'order': 10},
+            {'name': 'Разработка мобильного приложения', 'price': 300000.00, 'currency': 'RUB', 'language': 'ru', 'order': 20},
+            {'name': 'Интеграция API', 'price': 50000.00, 'currency': 'RUB', 'language': 'ru', 'order': 30},
+            {'name': 'Консультация (в час)', 'price': 10000.00, 'currency': 'RUB', 'language': 'ru', 'order': 40},
+            # Chinese
+            {'name': '网站开发', 'price': 10000.00, 'currency': 'CNY', 'language': 'zh', 'order': 10},
+            {'name': '移动应用开发', 'price': 20000.00, 'currency': 'CNY', 'language': 'zh', 'order': 20},
+            {'name': 'API集成', 'price': 3500.00, 'currency': 'CNY', 'language': 'zh', 'order': 30},
+            {'name': '咨询（每小时）', 'price': 700.00, 'currency': 'CNY', 'language': 'zh', 'order': 40},
+        ]
+
+        created_count = 0
+        for price_data in prices_data:
+            Price.objects.create(**price_data)
+            created_count += 1
+
+        self.stdout.write(f'  ✓ Created {created_count} price entries')

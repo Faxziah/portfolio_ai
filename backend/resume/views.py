@@ -4,10 +4,11 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.middleware.csrf import get_token
-from .models import Resume, Language, Skill, Experience, Education, Certificate, Project, ContactInfo, Setting, Translation, Visit
+from .models import Resume, Language, Skill, Experience, Education, Certificate, Project, ContactInfo, Setting, Translation, Visit, Carousel, Review, Price, Document
 from .serializers import (
     LanguageSerializer, ExperienceSerializer,
-    EducationSerializer, CertificateSerializer, ProjectSerializer, ContactInfoSerializer
+    EducationSerializer, CertificateSerializer, ProjectSerializer, ContactInfoSerializer,
+    CarouselSerializer, ReviewSerializer, PriceSerializer, DocumentSerializer
 )
 import logging
 import json
@@ -184,22 +185,39 @@ def get_resume(request):
         name_dict = {}
         firstname_dict = {}
         lastname_dict = {}
+        patronymic_dict = {}
         about_me_dict = {}
         resume_description_dict = {}
         resume_title_dict = {}
-        
+
         for lang_code, resume_obj in resumes.items():
-            name_dict[lang_code] = f"{resume_obj.firstname} {resume_obj.lastname}"
+            # Lastname Firstname Patronymic or Firstname Lastname
+            patronymic = getattr(resume_obj, 'patronymic', '') or ''
+            if lang_code == 'ru':
+                name_parts = [resume_obj.lastname, resume_obj.firstname]
+                if patronymic:
+                    name_parts.append(patronymic)
+                name_dict[lang_code] = ' '.join(name_parts)
+            else:
+                name_dict[lang_code] = f"{resume_obj.firstname} {resume_obj.lastname}"
             firstname_dict[lang_code] = resume_obj.firstname
             lastname_dict[lang_code] = resume_obj.lastname
+            patronymic_dict[lang_code] = patronymic
             about_me_dict[lang_code] = resume_obj.about_me or ""
             resume_description_dict[lang_code] = resume_obj.resume_description or ""
             resume_title_dict[lang_code] = resume_obj.resume_title or ""
-        
+
+        # Get new sections data
+        carousel_items = Carousel.objects.filter(language=lang).order_by('order')
+        reviews = Review.objects.filter(language=lang).order_by('order', '-created_at')
+        prices = Price.objects.filter(language=lang).order_by('order', 'name')
+        documents = Document.objects.filter(language=lang).order_by('order')
+
         return Response({
             "name": name_dict,
             "firstname": firstname_dict,
             "lastname": lastname_dict,
+            "patronymic": patronymic_dict,
             "languages": LanguageSerializer(languages, many=True).data,
             "skills": skills_dict,
             "skill_categories": list(skills_data.values()),
@@ -211,6 +229,10 @@ def get_resume(request):
             "resume_description": resume_description_dict,
             "resume_title": resume_title_dict,
             "contact_info": ContactInfoSerializer(contact_info, many=True).data,
+            "carousel": CarouselSerializer(carousel_items, many=True).data,
+            "reviews": ReviewSerializer(reviews, many=True).data,
+            "prices": PriceSerializer(prices, many=True).data,
+            "documents": DocumentSerializer(documents, many=True).data,
             "stats": {
                 "years_experience": years_experience,
                 "projects_completed": str(unique_projects_count),
