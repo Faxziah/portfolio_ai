@@ -1,16 +1,9 @@
 "use client"
 
-import { Github, Send, Mail, Phone, Globe, type LucideIcon } from "lucide-react"
+import { Mail } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useApp } from "@/context/app-context"
-
-const iconMap: Record<string, LucideIcon> = {
-  phone: Phone,
-  email: Mail,
-  github: Github,
-  telegram: Send,
-  hh: Globe,
-}
+import { iconMap } from "@/lib/constants"
 
 export function Footer() {
   const currentYear = new Date().getFullYear()

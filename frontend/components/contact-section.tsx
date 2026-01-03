@@ -2,17 +2,10 @@
 
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Mail, Phone, Github, Send, Globe, type LucideIcon } from "lucide-react"
+import { Mail } from "lucide-react"
 import { useApp } from "@/context/app-context"
 import { SectionWrapper } from "@/components/section-wrapper"
-
-const iconMap: Record<string, LucideIcon> = {
-  phone: Phone,
-  email: Mail,
-  github: Github,
-  telegram: Send,
-  hh: Globe,
-}
+import { iconMap } from "@/lib/constants"
 
 export function ContactSection() {
   const { t, resumeData, language } = useApp()
