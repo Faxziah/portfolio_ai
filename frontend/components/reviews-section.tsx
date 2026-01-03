@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { useApp } from "@/context/app-context"
 import { SectionWrapper } from "@/components/section-wrapper"
 import { Star, ChevronDown, ChevronUp } from "lucide-react"
+import { ITEMS_DISPLAY_LIMIT } from "@/lib/constants"
 
 const MAX_TEXT_LENGTH = 400
 
@@ -86,8 +87,8 @@ export function ReviewsSection() {
   }
 
   const reviews = resumeData.reviews
-  const displayedReviews = showAll ? reviews : reviews.slice(0, 6)
-  const hasMore = reviews.length > 6
+  const displayedReviews = showAll ? reviews : reviews.slice(0, ITEMS_DISPLAY_LIMIT)
+  const hasMore = reviews.length > ITEMS_DISPLAY_LIMIT
 
   return (
     <SectionWrapper id="reviews" title={t("reviewsTitle")} background="muted">

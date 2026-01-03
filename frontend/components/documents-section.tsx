@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { useApp } from "@/context/app-context"
 import { SectionWrapper } from "@/components/section-wrapper"
 import { ChevronDown, ChevronUp, X, ZoomIn } from "lucide-react"
+import { ITEMS_DISPLAY_LIMIT } from "@/lib/constants"
 
 export function DocumentsSection() {
   const { t, resumeData, settings } = useApp()
@@ -22,14 +23,14 @@ export function DocumentsSection() {
   }
 
   const documents = resumeData.documents
-  const displayedDocuments = showAll ? documents : documents.slice(0, 5)
-  const hasMore = documents.length > 5
+  const displayedDocuments = showAll ? documents : documents.slice(0, ITEMS_DISPLAY_LIMIT)
+  const hasMore = documents.length > ITEMS_DISPLAY_LIMIT
 
   return (
     <>
       <SectionWrapper id="documents" title={t("documentsTitle")} background="muted">
         <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {displayedDocuments.map((doc) => (
               <Card
                 key={doc.id}
@@ -44,18 +45,18 @@ export function DocumentsSection() {
                 }}
               >
                 {doc.photo_base64 ? (
-                  <div className="relative aspect-[3/4]">
+                  <div className="relative flex items-center justify-center bg-white">
                     <img
                       src={`data:${doc.photo_mime_type};base64,${doc.photo_base64}`}
                       alt={doc.description}
-                      className="w-full h-full object-cover"
+                      className="max-h-[250px] w-auto object-contain"
                     />
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center">
                       <ZoomIn className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
                     </div>
                   </div>
                 ) : (
-                  <div className="aspect-[3/4] bg-muted flex items-center justify-center">
+                  <div className="h-[250px] bg-muted flex items-center justify-center">
                     <span className="text-muted-foreground text-sm">{t("noImage")}</span>
                   </div>
                 )}

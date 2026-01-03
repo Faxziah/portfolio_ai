@@ -8,6 +8,9 @@ export const API_ENDPOINTS = {
   CSRF: "/api/csrf/",
 } as const
 
+// Number of items to show before "Show more" button appears
+export const ITEMS_DISPLAY_LIMIT = 4
+
 export const iconMap: Record<string, LucideIcon> = {
   phone: Phone,
   email: Mail,

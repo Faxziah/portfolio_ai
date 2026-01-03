@@ -91,7 +91,7 @@ export interface ContactInfo {
 export interface CarouselItem {
   id: number
   type: 'photo' | 'video'
-  title: string
+  description: string
   photo_base64: string | null
   photo_mime_type: string
   video_url: string

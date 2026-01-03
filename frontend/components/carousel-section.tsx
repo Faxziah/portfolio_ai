@@ -74,10 +74,10 @@ export function CarouselSection() {
                     <img
                       src={`data:${item.photo_mime_type};base64,${item.photo_base64}`}
                       alt={item.description || `Slide ${index + 1}`}
-                      className="w-full h-[400px] md:h-[500px] object-contain"
+                      className="w-full h-[400px] object-contain"
                     />
                   ) : item.type === "video" && item.video_url ? (
-                    <div className="w-full h-[400px] md:h-[500px] bg-black flex items-center justify-center relative">
+                    <div className="w-full h-[400px] bg-black flex items-center justify-center relative">
                       <iframe
                         src={getYouTubeEmbedUrl(item.video_url) || item.video_url}
                         title={item.description || `Video ${index + 1}`}
@@ -88,7 +88,7 @@ export function CarouselSection() {
                       />
                     </div>
                   ) : (
-                    <div className="w-full h-[400px] md:h-[500px] bg-muted flex items-center justify-center">
+                    <div className="w-full h-[400px] bg-muted flex items-center justify-center">
                       <span className="text-muted-foreground">{t("noContent")}</span>
                     </div>
                   )}

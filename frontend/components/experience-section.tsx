@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { useApp } from "@/context/app-context"
 import { SectionWrapper } from "@/components/section-wrapper"
 import { ChevronDown, ChevronUp } from "lucide-react"
+import { ITEMS_DISPLAY_LIMIT } from "@/lib/constants"
 
 export function ExperienceSection() {
   const { t, resumeData } = useApp()
@@ -16,8 +17,8 @@ export function ExperienceSection() {
   }
 
   const experiences = resumeData.experiences
-  const displayedExperiences = showAll ? experiences : experiences.slice(0, 5)
-  const hasMore = experiences.length > 5
+  const displayedExperiences = showAll ? experiences : experiences.slice(0, ITEMS_DISPLAY_LIMIT)
+  const hasMore = experiences.length > ITEMS_DISPLAY_LIMIT
 
   return (
     <SectionWrapper id="experience" title={t("experienceTitle")}>

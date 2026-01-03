@@ -4,6 +4,7 @@ import { useState } from "react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { GraduationCap, Award, ChevronDown, ChevronUp } from "lucide-react"
+import { ITEMS_DISPLAY_LIMIT } from "@/lib/constants"
 import { useApp } from "@/context/app-context"
 import { SectionWrapper } from "@/components/section-wrapper"
 
@@ -22,11 +23,11 @@ export function EducationSection() {
   const education = resumeData?.education || []
   const certificates = resumeData?.certificates || []
 
-  const displayedEducation = showAllEducation ? education : education.slice(0, 5)
-  const displayedCertificates = showAllCertificates ? certificates : certificates.slice(0, 5)
+  const displayedEducation = showAllEducation ? education : education.slice(0, ITEMS_DISPLAY_LIMIT)
+  const displayedCertificates = showAllCertificates ? certificates : certificates.slice(0, ITEMS_DISPLAY_LIMIT)
 
-  const hasMoreEducation = education.length > 5
-  const hasMoreCertificates = certificates.length > 5
+  const hasMoreEducation = education.length > ITEMS_DISPLAY_LIMIT
+  const hasMoreCertificates = certificates.length > ITEMS_DISPLAY_LIMIT
 
   const title = `${t("educationTitle")} ${t("and")} ${t("certificationsTitle")}`
 

@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { ExternalLink, ChevronDown, ChevronUp } from "lucide-react"
+import { ITEMS_DISPLAY_LIMIT } from "@/lib/constants"
 import { useApp } from "@/context/app-context"
 import { SectionWrapper } from "@/components/section-wrapper"
 
@@ -17,8 +18,8 @@ export function ProjectsSection() {
   }
 
   const projects = resumeData.projects
-  const displayedProjects = showAll ? projects : projects.slice(0, 6)
-  const hasMore = projects.length > 6
+  const displayedProjects = showAll ? projects : projects.slice(0, ITEMS_DISPLAY_LIMIT)
+  const hasMore = projects.length > ITEMS_DISPLAY_LIMIT
 
   return (
     <SectionWrapper id="projects" title={t("projectsTitle")}>

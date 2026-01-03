@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { useApp } from "@/context/app-context"
 import { SectionWrapper } from "@/components/section-wrapper"
 import { ChevronDown, ChevronUp } from "lucide-react"
+import { ITEMS_DISPLAY_LIMIT } from "@/lib/constants"
 
 function formatPrice(price: string, currency: string): string {
   const num = parseFloat(price)
@@ -33,8 +34,8 @@ export function PricesSection() {
   }
 
   const prices = resumeData.prices
-  const displayedPrices = showAll ? prices : prices.slice(0, 5)
-  const hasMore = prices.length > 5
+  const displayedPrices = showAll ? prices : prices.slice(0, ITEMS_DISPLAY_LIMIT)
+  const hasMore = prices.length > ITEMS_DISPLAY_LIMIT
 
   return (
     <SectionWrapper id="prices" title={t("pricesTitle")}>
