@@ -1,11 +1,11 @@
 services:
   postgres:
     image: postgres:16
-    container_name: portfolio_db
+    container_name: ${PROJECT_NAME}_db
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
-      - "127.0.0.1:5434:5432"
+      - "127.0.0.1:${DB_PORT}:5432"
     env_file:
       - ./.env
     healthcheck:
@@ -18,7 +18,7 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: portfolio_backend
+    container_name: ${PROJECT_NAME}_backend
     command: >
       sh -c "python manage.py collectstatic --noinput &&
              python manage.py makemigrations --noinput &&
@@ -28,7 +28,7 @@ services:
     volumes:
       - ./backend:/app
     ports:
-      - "127.0.0.1:8083:8000"
+      - "127.0.0.1:${BACKEND_PORT}:8000"
     depends_on:
       postgres:
         condition: service_healthy
@@ -42,12 +42,12 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: portfolio_frontend
+    container_name: ${PROJECT_NAME:-portfolio}_frontend
     env_file:
       - ./.env
       - ./frontend/.env
     ports:
-      - "127.0.0.1:8082:3000"
+      - "127.0.0.1:${FRONTEND_PORT}:3000"
     depends_on:
       - backend
 
