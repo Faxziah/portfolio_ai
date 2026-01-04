@@ -207,13 +207,11 @@ def get_resume(request):
             resume_description_dict[lang_code] = resume_obj.resume_description or ""
             resume_title_dict[lang_code] = resume_obj.resume_title or ""
 
-        # Get new sections data
-        carousel_items = Carousel.objects.filter(language=lang).order_by('order')
+        # Get non-media sections data
         reviews = Review.objects.filter(language=lang).order_by('order', '-created_at')
         prices = Price.objects.filter(language=lang).order_by('order', 'name')
-        documents = Document.objects.filter(language=lang).order_by('order')
 
-        return Response({
+        response_data = {
             "name": name_dict,
             "firstname": firstname_dict,
             "lastname": lastname_dict,
@@ -229,16 +227,18 @@ def get_resume(request):
             "resume_description": resume_description_dict,
             "resume_title": resume_title_dict,
             "contact_info": ContactInfoSerializer(contact_info, many=True).data,
-            "carousel": CarouselSerializer(carousel_items, many=True).data,
+            "carousel": [],  # Loaded separately via /api/resume/carousel/
             "reviews": ReviewSerializer(reviews, many=True).data,
             "prices": PriceSerializer(prices, many=True).data,
-            "documents": DocumentSerializer(documents, many=True).data,
+            "documents": [],  # Loaded separately via /api/resume/documents/
             "stats": {
                 "years_experience": years_experience,
                 "projects_completed": str(unique_projects_count),
                 "languages_count": str(languages_count),
             },
-        })
+        }
+
+        return Response(response_data)
     except Exception as e:
         logger.exception("Error in get_resume endpoint")
         return Response(
@@ -329,3 +329,71 @@ def get_csrf_token(request):
     This endpoint sets the csrftoken cookie and returns the token value.
     """
     return Response({'csrftoken': get_token(request)})
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def get_carousel(request):
+    """
+    Get carousel items (media-heavy).
+    Returns: [{ id, type, description, photo_base64, photo_mime_type, video_url, order }]
+    """
+    try:
+        lang = request.GET.get('lang', 'en')
+
+        # Validate language
+        valid_langs = ["en"]
+        try:
+            site_languages_setting = Setting.objects.filter(name='site_languages').first()
+            if site_languages_setting:
+                valid_langs = [l['code'] for l in json.loads(site_languages_setting.value)]
+                if lang not in valid_langs:
+                    lang = valid_langs[0] if valid_langs else "en"
+        except:
+            pass
+
+        carousel_items = Carousel.objects.filter(language=lang).order_by('order')
+        response = Response(CarouselSerializer(carousel_items, many=True).data)
+        # Cache for 1 hour (media changes rarely)
+        response['Cache-Control'] = 'public, max-age=3600'
+        return response
+    except Exception as e:
+        logger.exception("Error in get_carousel endpoint")
+        return Response(
+            {"error": "Internal server error"},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def get_documents(request):
+    """
+    Get document items (media-heavy).
+    Returns: [{ id, description, photo_base64, photo_mime_type, order }]
+    """
+    try:
+        lang = request.GET.get('lang', 'en')
+
+        # Validate language
+        valid_langs = ["en"]
+        try:
+            site_languages_setting = Setting.objects.filter(name='site_languages').first()
+            if site_languages_setting:
+                valid_langs = [l['code'] for l in json.loads(site_languages_setting.value)]
+                if lang not in valid_langs:
+                    lang = valid_langs[0] if valid_langs else "en"
+        except:
+            pass
+
+        documents = Document.objects.filter(language=lang).order_by('order')
+        response = Response(DocumentSerializer(documents, many=True).data)
+        # Cache for 1 hour (media changes rarely)
+        response['Cache-Control'] = 'public, max-age=3600'
+        return response
+    except Exception as e:
+        logger.exception("Error in get_documents endpoint")
+        return Response(
+            {"error": "Internal server error"},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )

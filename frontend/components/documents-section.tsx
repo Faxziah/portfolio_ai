@@ -8,8 +8,27 @@ import { SectionWrapper } from "@/components/section-wrapper"
 import { ChevronDown, ChevronUp, X, ZoomIn } from "lucide-react"
 import { ITEMS_DISPLAY_LIMIT } from "@/lib/constants"
 
+function DocumentsSkeleton() {
+  return (
+    <div className="max-w-6xl mx-auto">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {[1, 2, 3, 4].map((i) => (
+          <Card key={i} className="overflow-hidden">
+            <div className="h-[250px] bg-muted animate-pulse flex items-center justify-center">
+              <div className="w-12 h-12 border-4 border-muted-foreground/20 border-t-primary rounded-full animate-spin" />
+            </div>
+            <div className="p-3">
+              <div className="h-4 bg-muted rounded animate-pulse w-3/4" />
+            </div>
+          </Card>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 export function DocumentsSection() {
-  const { t, resumeData, settings } = useApp()
+  const { t, settings, documentsData, documentsLoading } = useApp()
   const [showAll, setShowAll] = useState(false)
   const [lightboxImage, setLightboxImage] = useState<{ src: string; description: string } | null>(null)
 
@@ -18,11 +37,20 @@ export function DocumentsSection() {
     return null
   }
 
-  if (!resumeData?.documents || resumeData.documents.length === 0) {
+  // Show skeleton while loading
+  if (documentsLoading) {
+    return (
+      <SectionWrapper id="documents" title={t("documentsTitle")} background="muted">
+        <DocumentsSkeleton />
+      </SectionWrapper>
+    )
+  }
+
+  if (!documentsData || documentsData.length === 0) {
     return null
   }
 
-  const documents = resumeData.documents
+  const documents = documentsData
   const displayedDocuments = showAll ? documents : documents.slice(0, ITEMS_DISPLAY_LIMIT)
   const hasMore = documents.length > ITEMS_DISPLAY_LIMIT
 

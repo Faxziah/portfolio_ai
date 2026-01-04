@@ -1,8 +1,8 @@
 "use client"
 
-import { createContext, useContext, useState, useEffect, type ReactNode } from "react"
+import { createContext, useContext, useState, useEffect, useRef, type ReactNode } from "react"
 import { type Language, type Translations } from "@/lib/types"
-import { fetchResume, fetchCsrfToken, type ResumeData, type SiteLanguage, type Settings } from "@/lib/api"
+import { fetchResume, fetchCsrfToken, type ResumeData, type SiteLanguage, type Settings, type CarouselItem, type DocumentItem } from "@/lib/api"
 import { API_BASE_URL } from "@/lib/constants"
 
 interface AppContextType {
@@ -16,6 +16,11 @@ interface AppContextType {
   resumeError: Error | null
   siteLanguages: SiteLanguage[]
   settings: Settings
+  // Separate loading states for media sections
+  carouselData: CarouselItem[]
+  carouselLoading: boolean
+  documentsData: DocumentItem[]
+  documentsLoading: boolean
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined)
@@ -71,6 +76,90 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [defaultLanguage, setDefaultLanguage] = useState<string>("en")
   const [settings, setSettings] = useState<Settings>({})
 
+  // Separate state for media-heavy sections
+  const [carouselData, setCarouselData] = useState<CarouselItem[]>([])
+  const [carouselLoading, setCarouselLoading] = useState(true)
+  const [documentsData, setDocumentsData] = useState<DocumentItem[]>([])
+  const [documentsLoading, setDocumentsLoading] = useState(true)
+
+  // Track if initial load is complete to prevent duplicate requests
+  const initialLoadRef = useRef(false)
+  const prevLanguageRef = useRef<string>("")
+
+  // Load core resume data (without media) - fast
+  const loadCoreData = async (lang: string) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/resume/?lang=${lang}`, {
+        credentials: "include",
+      })
+      if (!response.ok) throw new Error("Failed to fetch resume")
+      const data = await response.json()
+      setResumeData(data)
+      setResumeError(null)
+    } catch (error) {
+      console.error("Failed to fetch resume data:", error)
+      setResumeError(error instanceof Error ? error : new Error("Failed to load resume"))
+    }
+  }
+
+  // Load carousel data separately - may be slow/large
+  const loadCarouselData = async (lang: string) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/resume/carousel/?lang=${lang}`, {
+        credentials: "include",
+      })
+      if (!response.ok) throw new Error("Failed to fetch carousel")
+      const data = await response.json()
+      setCarouselData(data || [])
+    } catch (error) {
+      console.error("Failed to fetch carousel data:", error)
+      setCarouselData([])
+    } finally {
+      setCarouselLoading(false)
+    }
+  }
+
+  // Load documents data separately - may be slow/large
+  const loadDocumentsData = async (lang: string) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/resume/documents/?lang=${lang}`, {
+        credentials: "include",
+      })
+      if (!response.ok) throw new Error("Failed to fetch documents")
+      const data = await response.json()
+      setDocumentsData(data || [])
+    } catch (error) {
+      console.error("Failed to fetch documents data:", error)
+      setDocumentsData([])
+    } finally {
+      setDocumentsLoading(false)
+    }
+  }
+
+  // Load all data for a language
+  const loadAllData = (lang: string) => {
+    loadTranslations(lang)
+    loadCoreData(lang)
+    // Load media sections in parallel (they show skeletons while loading)
+    loadCarouselData(lang)
+    loadDocumentsData(lang)
+  }
+
+  // Load translations
+  const loadTranslations = async (lang: string) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/translations/?lang=${lang}`, {
+        credentials: "include",
+      })
+      if (!response.ok) throw new Error("Failed to fetch translations")
+      const data = await response.json()
+      setTranslations(data)
+    } catch (error) {
+      console.error("Failed to fetch translations:", error)
+    }
+  }
+
+  // Initial mount effect - loads settings and determines language
   useEffect(() => {
     setMounted(true)
     const savedLanguage = localStorage.getItem("language")
@@ -105,78 +194,46 @@ export function AppProvider({ children }: { children: ReactNode }) {
         setDefaultLanguage(settingsDefaultLang)
 
         const initialLang = savedLanguage || settingsDefaultLang
+        prevLanguageRef.current = initialLang
         setLanguage(initialLang)
 
-        // Load translations
-        fetch(`${API_BASE_URL}/api/translations/?lang=${initialLang}`, { credentials: "include" })
-          .then((res) => res.json())
-          .then((translationsData) => {
-            setTranslations(translationsData)
-          })
-          .catch((error) => {
-            console.error("Failed to fetch translations:", error)
-          })
-
-        // Load resume
-        fetchResume(initialLang)
-          .then((resumeDataResponse) => {
-            setResumeData(resumeDataResponse)
-            setResumeError(null)
-          })
-          .catch((error) => {
-            console.error("Failed to fetch resume data:", error)
-            setResumeError(error instanceof Error ? error : new Error("Failed to load resume"))
-          })
+        // Load data for initial language
+        initialLoadRef.current = true
+        loadAllData(initialLang)
       })
       .catch((error) => {
         console.error("Failed to fetch settings:", error)
         // Fallback if settings fail
         const initialLang = savedLanguage || "en"
+        prevLanguageRef.current = initialLang
         setLanguage(initialLang)
         setDefaultLanguage("en")
 
-        fetch(`${API_BASE_URL}/api/translations/?lang=${initialLang}`)
-          .then((res) => res.json())
-          .then((data) => setTranslations(data))
-          .catch((err) => console.error("Failed to fetch translations:", err))
-
-        fetchResume(initialLang)
-          .then((data) => {
-            setResumeData(data)
-            setResumeError(null)
-          })
-          .catch((err) => {
-            console.error("Failed to fetch resume data:", err)
-            setResumeError(err instanceof Error ? err : new Error("Failed to load resume"))
-          })
+        initialLoadRef.current = true
+        loadAllData(initialLang)
       })
   }, [])
 
+  // Effect for language changes (after initial load)
   useEffect(() => {
-    // Skip if not mounted or language is empty (initial state)
-    if (!mounted || !language) {
+    // Skip if not mounted, language is empty, or this is the initial load
+    if (!mounted || !language || !initialLoadRef.current) {
       return
     }
 
-    // Load resume data
-    fetchResume(language)
-      .then((data) => {
-        setResumeData(data)
-        setResumeError(null)
-      })
-      .catch((error) => {
-        console.error("Failed to fetch resume data:", error)
-      })
+    // Skip if language hasn't actually changed
+    if (prevLanguageRef.current === language) {
+      return
+    }
 
-    // Load translations
-    fetch(`${API_BASE_URL}/api/translations/?lang=${language}`)
-      .then((res) => res.json())
-      .then((data) => {
-        setTranslations(data)
-      })
-      .catch((error) => {
-        console.error("Failed to fetch translations:", error)
-      })
+    prevLanguageRef.current = language
+
+    // Reset loading states for media sections
+    setCarouselLoading(true)
+    setDocumentsLoading(true)
+
+    // Load data for new language
+    loadAllData(language)
   }, [language, mounted])
 
   const handleSetLanguage = (lang: Language) => {
@@ -212,7 +269,22 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AppContext.Provider value={{ language, setLanguage: handleSetLanguage, t, theme, toggleTheme, colorScheme, resumeData, resumeError, siteLanguages, settings }}>
+    <AppContext.Provider value={{
+      language,
+      setLanguage: handleSetLanguage,
+      t,
+      theme,
+      toggleTheme,
+      colorScheme,
+      resumeData,
+      resumeError,
+      siteLanguages,
+      settings,
+      carouselData,
+      carouselLoading,
+      documentsData,
+      documentsLoading,
+    }}>
       {children}
     </AppContext.Provider>
   )

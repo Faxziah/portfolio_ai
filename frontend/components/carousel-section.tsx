@@ -31,8 +31,28 @@ function getYouTubeThumbnail(url: string): string | null {
   return null
 }
 
+function CarouselSkeleton() {
+  return (
+    <div className="max-w-4xl mx-auto">
+      <div className="relative">
+        <div className="overflow-hidden rounded-xl">
+          <div className="w-full h-[400px] bg-muted animate-pulse flex items-center justify-center">
+            <div className="w-16 h-16 border-4 border-muted-foreground/20 border-t-primary rounded-full animate-spin" />
+          </div>
+        </div>
+      </div>
+      {/* Skeleton thumbnails */}
+      <div className="flex gap-2 mt-4 overflow-x-auto pb-2">
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="flex-shrink-0 w-16 h-12 bg-muted rounded-lg animate-pulse" />
+        ))}
+      </div>
+    </div>
+  )
+}
+
 export function CarouselSection() {
-  const { t, resumeData, settings } = useApp()
+  const { t, settings, carouselData, carouselLoading } = useApp()
   const [currentIndex, setCurrentIndex] = useState(0)
 
   // Check if carousel should be shown
@@ -40,11 +60,20 @@ export function CarouselSection() {
     return null
   }
 
-  if (!resumeData?.carousel || resumeData.carousel.length === 0) {
+  // Show skeleton while loading
+  if (carouselLoading) {
+    return (
+      <SectionWrapper id="carousel" title={t("carouselTitle")} className="bg-white dark:bg-background">
+        <CarouselSkeleton />
+      </SectionWrapper>
+    )
+  }
+
+  if (!carouselData || carouselData.length === 0) {
     return null
   }
 
-  const items = resumeData.carousel
+  const items = carouselData
 
   const nextSlide = () => {
     setCurrentIndex((prev) => (prev + 1) % items.length)
