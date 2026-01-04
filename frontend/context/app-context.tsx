@@ -153,27 +153,30 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, [])
 
   useEffect(() => {
-    if (mounted) {
-      // Load resume data
-      fetchResume(language)
-        .then((data) => {
-          setResumeData(data)
-          setResumeError(null)
-        })
-        .catch((error) => {
-          console.error("Failed to fetch resume data:", error)
-        })
-      
-      // Load translations
-      fetch(`${API_BASE_URL}/api/translations/?lang=${language}`)
-        .then((res) => res.json())
-        .then((data) => {
-          setTranslations(data)
-        })
-        .catch((error) => {
-          console.error("Failed to fetch translations:", error)
-        })
+    // Skip if not mounted or language is empty (initial state)
+    if (!mounted || !language) {
+      return
     }
+
+    // Load resume data
+    fetchResume(language)
+      .then((data) => {
+        setResumeData(data)
+        setResumeError(null)
+      })
+      .catch((error) => {
+        console.error("Failed to fetch resume data:", error)
+      })
+
+    // Load translations
+    fetch(`${API_BASE_URL}/api/translations/?lang=${language}`)
+      .then((res) => res.json())
+      .then((data) => {
+        setTranslations(data)
+      })
+      .catch((error) => {
+        console.error("Failed to fetch translations:", error)
+      })
   }, [language, mounted])
 
   const handleSetLanguage = (lang: Language) => {

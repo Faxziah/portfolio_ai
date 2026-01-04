@@ -22,8 +22,8 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: "AI Portfolio",
-  description: "AI Portfolio"
+  title: process.env.NEXT_PUBLIC_SITE_TITLE || "Profile",
+  description: process.env.NEXT_PUBLIC_SITE_DESCRIPTION || "Profile"
 }
 
 export default function RootLayout({
