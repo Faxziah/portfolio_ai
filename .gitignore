@@ -22,3 +22,7 @@ ENV/
 backend/resume/management/commands/fill_resume_data_real.py
 /frontend/node_modules
 /frontend/.next
+
+# Doctor-specific branding (uploaded per deployment)
+frontend/public/favicon*.ico
+frontend/public/logo*.svg

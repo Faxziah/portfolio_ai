@@ -42,7 +42,7 @@ export function Header() {
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="rounded-[12px] cursor-pointer" onClick={scrollToTop}>
-            <Image src="/logo.png" alt={name || "Logo"} width={48} height={48} priority className="object-contain rounded-[12px]" />
+            <Image src="/logo.svg" alt={name || "Logo"} width={64} height={64} priority className="object-contain rounded-[12px]" />
           </div>
         </div>
 
