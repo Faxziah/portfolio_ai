@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { SectionWrapper } from "@/components/section-wrapper"
 import { ChevronLeft, ChevronRight, Play } from "lucide-react"
 import { useClient } from "@/components/client-providers"
+import { LazyYouTube } from "@/components/lazy-youtube"
 
 function getYouTubeVideoId(url: string): string | null {
   const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/
@@ -107,14 +108,20 @@ export function CarouselSection() {
                     />
                   ) : item.type === "video" && item.video_url ? (
                     <div className="w-full h-[400px] bg-black flex items-center justify-center relative">
-                      <iframe
-                        src={getYouTubeEmbedUrl(item.video_url) || item.video_url}
-                        title={item.description || `Video ${index + 1}`}
-                        className="w-full h-full"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        referrerPolicy="strict-origin-when-cross-origin"
-                        allowFullScreen
-                      />
+                      {getYouTubeVideoId(item.video_url) ? (
+                        <LazyYouTube
+                          videoId={getYouTubeVideoId(item.video_url)!}
+                          title={item.description || `Video ${index + 1}`}
+                        />
+                      ) : (
+                        <iframe
+                          src={item.video_url}
+                          title={item.description || `Video ${index + 1}`}
+                          className="w-full h-full"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowFullScreen
+                        />
+                      )}
                     </div>
                   ) : (
                     <div className="w-full h-[400px] bg-muted flex items-center justify-center">
