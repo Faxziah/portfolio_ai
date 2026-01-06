@@ -1,14 +1,17 @@
-"use client"
-
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Mail } from "lucide-react"
-import { useApp } from "@/context/app-context"
 import { SectionWrapper } from "@/components/section-wrapper"
 import { iconMap } from "@/lib/constants"
+import { type ResumeData } from "@/lib/api"
 
-export function ContactSection() {
-  const { t, resumeData, language } = useApp()
+interface ContactSectionProps {
+  resumeData: ResumeData
+  translations: Record<string, string>
+}
+
+export function ContactSection({ resumeData, translations }: ContactSectionProps) {
+  const t = (key: string) => translations[key] || key
 
   const contactInfo = resumeData?.contact_info || []
 

@@ -1,15 +1,14 @@
-"use client"
+import { type ResumeData } from "@/lib/api"
+import { HeroButtons } from "./hero-buttons"
 
-import { Button } from "@/components/ui/button"
-import { ChevronDown } from "lucide-react"
-import { useApp } from "@/context/app-context"
+interface HeroSectionProps {
+  resumeData: ResumeData
+  language: string
+  translations: Record<string, string>
+}
 
-export function HeroSection() {
-  const { t, resumeData, language } = useApp()
-
-  const scrollToSection = (id: string) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" })
-  }
+export function HeroSection({ resumeData, language, translations }: HeroSectionProps) {
+  const t = (key: string) => translations[key] || key
 
   const name = resumeData?.name?.[language] || ""
   const heroTitle = resumeData?.resume_title?.[language] || ""
@@ -33,30 +32,10 @@ export function HeroSection() {
             {heroDescription}
           </p>
 
-          <div className="flex flex-wrap items-center justify-center gap-4">
-            <Button
-              size="lg"
-              onClick={() => scrollToSection("projects")}
-              className="bg-gradient-to-r from-primary via-secondary to-accent hover:scale-105 transition-transform shadow-lg cursor-pointer"
-            >
-              {t("viewProjects")}
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              onClick={() => scrollToSection("contact")}
-              className="border-2 border-primary/50 hover:border-primary hover:bg-primary/10 hover:text-primary hover:scale-105 transition-all duration-300 shadow-sm hover:shadow-md cursor-pointer"
-            >
-              {t("contactMe")}
-            </Button>
-          </div>
-        </div>
-
-        <div 
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce cursor-pointer hover:scale-110 transition-transform"
-          onClick={() => scrollToSection("about")}
-        >
-          <ChevronDown className="h-8 w-8 text-primary" />
+          <HeroButtons
+            viewProjectsText={t("viewProjects")}
+            contactMeText={t("contactMe")}
+          />
         </div>
       </div>
     </section>

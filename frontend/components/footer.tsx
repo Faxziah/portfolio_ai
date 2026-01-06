@@ -1,13 +1,17 @@
-"use client"
-
 import { Mail } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { useApp } from "@/context/app-context"
 import { iconMap } from "@/lib/constants"
+import { type ResumeData } from "@/lib/api"
 
-export function Footer() {
+interface FooterProps {
+  translations: Record<string, string>
+  resumeData?: ResumeData
+  language?: string
+}
+
+export function Footer({ translations, resumeData, language = "en" }: FooterProps) {
   const currentYear = new Date().getFullYear()
-  const { resumeData, language, t } = useApp()
+  const t = (key: string) => translations[key] || key
   const name = resumeData?.name?.[language] || ""
   const contactInfo = resumeData?.contact_info || []
 

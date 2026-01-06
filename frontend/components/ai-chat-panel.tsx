@@ -6,8 +6,8 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Send, Bot, User } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { useApp } from "@/context/app-context"
-import { sendChatMessage } from "@/lib/api"
+import { useClient } from "@/components/client-providers"
+import { sendChatMessage, type ResumeData } from "@/lib/api"
 import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
 
@@ -31,7 +31,7 @@ function generateUUID(): string {
 }
 
 export function AIChatPanel({ isOpen, onClose }: AIChatPanelProps) {
-  const { t, resumeData, language } = useApp()
+  const { t, resumeData, language } = useClient()
 
   const getWelcomeMessage = () => {
     const baseMessage = t("aiChatWelcome")

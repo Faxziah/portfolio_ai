@@ -5,11 +5,16 @@ import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { GraduationCap, Award, ChevronDown, ChevronUp } from "lucide-react"
 import { ITEMS_DISPLAY_LIMIT } from "@/lib/constants"
-import { useApp } from "@/context/app-context"
 import { SectionWrapper } from "@/components/section-wrapper"
+import { type ResumeData } from "@/lib/api"
 
-export function EducationSection() {
-  const { t, resumeData } = useApp()
+interface EducationSectionProps {
+  resumeData: ResumeData
+  translations: Record<string, string>
+}
+
+export function EducationSection({ resumeData, translations }: EducationSectionProps) {
+  const t = (key: string) => translations[key] || key
   const [showAllEducation, setShowAllEducation] = useState(false)
   const [showAllCertificates, setShowAllCertificates] = useState(false)
 

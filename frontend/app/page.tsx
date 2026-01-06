@@ -1,6 +1,32 @@
-"use client"
+import { cookies } from "next/headers"
+import { type Metadata } from "next"
+import { getSettings, getTranslations, getResumeData, getCarouselData, getDocumentsData } from "@/lib/server-api"
 
-import { useState } from "react"
+export async function generateMetadata(): Promise<Metadata> {
+  const cookieStore = await cookies()
+  const settings = await getSettings()
+  const defaultLang = settings.default_language || settings.site_languages?.[0]?.code || "en"
+  const language = cookieStore.get("language")?.value || defaultLang
+
+  const [translations, resumeData] = await Promise.all([
+    getTranslations(language),
+    getResumeData(language),
+  ])
+
+  const name = resumeData?.name?.[language] || "Portfolio"
+  const title = resumeData?.resume_title?.[language] || name
+  const description = resumeData?.resume_description?.[language] || translations["heroDescription"] || ""
+
+  return {
+    title: `${name} - ${title}`,
+    description,
+    openGraph: {
+      title: `${name} - ${title}`,
+      description,
+      type: "website",
+    },
+  }
+}
 import { HeroSection } from "@/components/hero-section"
 import { CarouselSection } from "@/components/carousel-section"
 import { AboutSection } from "@/components/about-section"
@@ -14,33 +40,104 @@ import { PricesSection } from "@/components/prices-section"
 import { ContactSection } from "@/components/contact-section"
 import { DocumentsSection } from "@/components/documents-section"
 import { Header } from "@/components/header"
-import { AIChatButton } from "@/components/ai-chat-button"
-import { ScrollToTop } from "@/components/scroll-to-top"
 import { Footer } from "@/components/footer"
+import { ClientProviders } from "@/components/client-providers"
 
-export default function Home() {
-  const [aiChatOpen, setAiChatOpen] = useState(false)
+export default async function Home() {
+  // Get language from cookies
+  const cookieStore = await cookies()
+  const settings = await getSettings()
+
+  const defaultLang = settings.default_language || settings.site_languages?.[0]?.code || "en"
+  const language = cookieStore.get("language")?.value || defaultLang
+
+  // Fetch all data in parallel on server
+  const [translations, resumeData, carouselData, documentsData] = await Promise.all([
+    getTranslations(language),
+    getResumeData(language),
+    getCarouselData(language),
+    getDocumentsData(language),
+  ])
+
+  if (!resumeData) {
+    return <div>Failed to load data</div>
+  }
+
+  // Helper function for translations
+  const t = (key: string): string => translations[key] || key
 
   return (
-    <div className="min-h-screen">
-      <Header />
-      <AIChatButton onOpenChange={setAiChatOpen} />
-      <main>
-        <HeroSection />
-        <CarouselSection />
-        <AboutSection />
-        <ExperienceSection />
-        <SkillsSection />
-        <ProjectsSection />
-        <EducationSection />
-        <LanguagesSection />
-        <ReviewsSection />
-        <PricesSection />
-        <ContactSection />
-        <DocumentsSection />
-      </main>
-      <Footer />
-      <ScrollToTop aiChatOpen={aiChatOpen} />
-    </div>
+    <ClientProviders
+      settings={settings}
+      language={language}
+      translations={translations}
+      resumeData={resumeData}
+    >
+      <div className="min-h-screen">
+        <Header
+          settings={settings}
+          language={language}
+          translations={translations}
+        />
+        <main>
+          <HeroSection
+            resumeData={resumeData}
+            language={language}
+            translations={translations}
+          />
+          <CarouselSection
+            carouselData={carouselData}
+            settings={settings}
+            translations={translations}
+          />
+          <AboutSection
+            resumeData={resumeData}
+            language={language}
+            translations={translations}
+          />
+          <ExperienceSection
+            resumeData={resumeData}
+            translations={translations}
+          />
+          <SkillsSection
+            resumeData={resumeData}
+            translations={translations}
+          />
+          <ProjectsSection
+            resumeData={resumeData}
+            translations={translations}
+          />
+          <EducationSection
+            resumeData={resumeData}
+            translations={translations}
+          />
+          <LanguagesSection
+            resumeData={resumeData}
+            translations={translations}
+          />
+          <ReviewsSection
+            resumeData={resumeData}
+            settings={settings}
+            translations={translations}
+            language={language}
+          />
+          <PricesSection
+            resumeData={resumeData}
+            settings={settings}
+            translations={translations}
+          />
+          <ContactSection
+            resumeData={resumeData}
+            translations={translations}
+          />
+          <DocumentsSection
+            documentsData={documentsData}
+            settings={settings}
+            translations={translations}
+          />
+        </main>
+        <Footer translations={translations} resumeData={resumeData} language={language} />
+      </div>
+    </ClientProviders>
   )
 }

@@ -1,12 +1,15 @@
-"use client"
-
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { useApp } from "@/context/app-context"
 import { SectionWrapper } from "@/components/section-wrapper"
+import { type ResumeData } from "@/lib/api"
 
-export function SkillsSection() {
-  const { t, resumeData } = useApp()
+interface SkillsSectionProps {
+  resumeData: ResumeData
+  translations: Record<string, string>
+}
+
+export function SkillsSection({ resumeData, translations }: SkillsSectionProps) {
+  const t = (key: string) => translations[key] || key
 
   if (!resumeData?.skill_categories || resumeData.skill_categories.length === 0) {
     return null

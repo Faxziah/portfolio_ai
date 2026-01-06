@@ -1,11 +1,14 @@
-"use client"
-
 import { Card } from "@/components/ui/card"
-import { useApp } from "@/context/app-context"
 import { SectionWrapper } from "@/components/section-wrapper"
+import { type ResumeData } from "@/lib/api"
 
-export function LanguagesSection() {
-  const { t, resumeData } = useApp()
+interface LanguagesSectionProps {
+  resumeData: ResumeData
+  translations: Record<string, string>
+}
+
+export function LanguagesSection({ resumeData, translations }: LanguagesSectionProps) {
+  const t = (key: string) => translations[key] || key
 
   if (!resumeData?.languages || resumeData.languages.length === 0) {
     return null

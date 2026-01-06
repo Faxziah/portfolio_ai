@@ -1,12 +1,16 @@
-"use client"
-
 import { Card } from "@/components/ui/card"
 import { Briefcase, Code, Globe } from "lucide-react"
-import { useApp } from "@/context/app-context"
 import { SectionWrapper } from "@/components/section-wrapper"
+import { type ResumeData } from "@/lib/api"
 
-export function AboutSection() {
-  const { t, resumeData, language } = useApp()
+interface AboutSectionProps {
+  resumeData: ResumeData
+  language: string
+  translations: Record<string, string>
+}
+
+export function AboutSection({ resumeData, language, translations }: AboutSectionProps) {
+  const t = (key: string) => translations[key] || key
 
   const stats = [
     { icon: Briefcase, value: resumeData?.stats?.years_experience || "", label: t("yearsExperience") },

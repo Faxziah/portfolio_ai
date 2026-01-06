@@ -3,13 +3,18 @@
 import { useState } from "react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { useApp } from "@/context/app-context"
 import { SectionWrapper } from "@/components/section-wrapper"
 import { ChevronDown, ChevronUp } from "lucide-react"
 import { ITEMS_DISPLAY_LIMIT } from "@/lib/constants"
+import { type ResumeData } from "@/lib/api"
 
-export function ExperienceSection() {
-  const { t, resumeData } = useApp()
+interface ExperienceSectionProps {
+  resumeData: ResumeData
+  translations: Record<string, string>
+}
+
+export function ExperienceSection({ resumeData, translations }: ExperienceSectionProps) {
+  const t = (key: string) => translations[key] || key
   const [showAll, setShowAll] = useState(false)
 
   if (!resumeData?.experiences || resumeData.experiences.length === 0) {

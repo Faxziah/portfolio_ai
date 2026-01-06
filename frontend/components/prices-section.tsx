@@ -3,10 +3,10 @@
 import { useState } from "react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { useApp } from "@/context/app-context"
 import { SectionWrapper } from "@/components/section-wrapper"
 import { ChevronDown, ChevronUp } from "lucide-react"
 import { ITEMS_DISPLAY_LIMIT } from "@/lib/constants"
+import { type ResumeData, type Settings } from "@/lib/api"
 
 function formatPrice(price: string, currency: string): string {
   const num = parseFloat(price)
@@ -20,8 +20,14 @@ function formatPrice(price: string, currency: string): string {
   return `${num.toLocaleString()} ${symbol}`
 }
 
-export function PricesSection() {
-  const { t, resumeData, settings } = useApp()
+interface PricesSectionProps {
+  resumeData: ResumeData
+  settings: Settings
+  translations: Record<string, string>
+}
+
+export function PricesSection({ resumeData, settings, translations }: PricesSectionProps) {
+  const t = (key: string) => translations[key] || key
   const [showAll, setShowAll] = useState(false)
 
   // Check if prices should be shown

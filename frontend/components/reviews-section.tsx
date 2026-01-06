@@ -3,15 +3,21 @@
 import { useState } from "react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { useApp } from "@/context/app-context"
 import { SectionWrapper } from "@/components/section-wrapper"
 import { Star, ChevronDown, ChevronUp } from "lucide-react"
 import { ITEMS_DISPLAY_LIMIT } from "@/lib/constants"
+import { type ResumeData, type Settings } from "@/lib/api"
 
 const MAX_TEXT_LENGTH = 400
 
-function ReviewCard({ review }: { review: { id: number; stars: number; text: string; author?: string; created_at: string } }) {
-  const { t, language } = useApp()
+interface ReviewCardProps {
+  review: { id: number; stars: number; text: string; author?: string; created_at: string }
+  language: string
+  translations: Record<string, string>
+}
+
+function ReviewCard({ review, language, translations }: ReviewCardProps) {
+  const t = (key: string) => translations[key] || key
   const [expanded, setExpanded] = useState(false)
 
   const isLongText = review.text.length > MAX_TEXT_LENGTH
@@ -73,8 +79,15 @@ function ReviewCard({ review }: { review: { id: number; stars: number; text: str
   )
 }
 
-export function ReviewsSection() {
-  const { t, resumeData, settings } = useApp()
+interface ReviewsSectionProps {
+  resumeData: ResumeData
+  settings: Settings
+  translations: Record<string, string>
+  language?: string
+}
+
+export function ReviewsSection({ resumeData, settings, translations, language = "en" }: ReviewsSectionProps) {
+  const t = (key: string) => translations[key] || key
   const [showAll, setShowAll] = useState(false)
 
   // Check if reviews should be shown
@@ -95,7 +108,7 @@ export function ReviewsSection() {
       <div className="max-w-4xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {displayedReviews.map((review) => (
-            <ReviewCard key={review.id} review={review} />
+            <ReviewCard key={review.id} review={review} language={language} translations={translations} />
           ))}
         </div>
 

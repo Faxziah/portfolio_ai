@@ -1,7 +1,6 @@
 import type React from "react"
 import type { Metadata } from "next"
 
-import { AppProvider } from "@/context/app-context"
 import "@/app/globals.css"
 
 import { Geist, Geist_Mono, Geist as V0_Font_Geist, Geist_Mono as V0_Font_Geist_Mono, Source_Serif_4 as V0_Font_Source_Serif_4 } from 'next/font/google'
@@ -22,8 +21,7 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: process.env.NEXT_PUBLIC_SITE_TITLE || "Profile",
-  description: process.env.NEXT_PUBLIC_SITE_DESCRIPTION || "Profile"
+  // Default metadata, overridden by generateMetadata in page.tsx
 }
 
 export default function RootLayout({
@@ -34,7 +32,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}>
-        <AppProvider>{children}</AppProvider>
+        {children}
       </body>
     </html>
   )

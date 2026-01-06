@@ -6,11 +6,16 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { ExternalLink, ChevronDown, ChevronUp } from "lucide-react"
 import { ITEMS_DISPLAY_LIMIT } from "@/lib/constants"
-import { useApp } from "@/context/app-context"
 import { SectionWrapper } from "@/components/section-wrapper"
+import { type ResumeData } from "@/lib/api"
 
-export function ProjectsSection() {
-  const { t, resumeData } = useApp()
+interface ProjectsSectionProps {
+  resumeData: ResumeData
+  translations: Record<string, string>
+}
+
+export function ProjectsSection({ resumeData, translations }: ProjectsSectionProps) {
+  const t = (key: string) => translations[key] || key
   const [showAll, setShowAll] = useState(false)
 
   if (!resumeData?.projects || resumeData.projects.length === 0) {
