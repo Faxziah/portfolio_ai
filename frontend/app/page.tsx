@@ -1,6 +1,6 @@
 import { cookies } from "next/headers"
 import { type Metadata } from "next"
-import { getSettings, getTranslations, getResumeData, getCarouselData, getDocumentsData } from "@/lib/server-api"
+import { getSettings, getTranslations, getResumeData } from "@/lib/server-api"
 
 export async function generateMetadata(): Promise<Metadata> {
   const cookieStore = await cookies()
@@ -51,12 +51,10 @@ export default async function Home() {
   const defaultLang = settings.default_language || settings.site_languages?.[0]?.code || "en"
   const language = cookieStore.get("language")?.value || defaultLang
 
-  // Fetch all data in parallel on server
-  const [translations, resumeData, carouselData, documentsData] = await Promise.all([
+  // Fetch core data on server (media loaded on client to reduce initial page size)
+  const [translations, resumeData] = await Promise.all([
     getTranslations(language),
     getResumeData(language),
-    getCarouselData(language),
-    getDocumentsData(language),
   ])
 
   if (!resumeData) {
@@ -85,11 +83,7 @@ export default async function Home() {
             language={language}
             translations={translations}
           />
-          <CarouselSection
-            carouselData={carouselData}
-            settings={settings}
-            translations={translations}
-          />
+          <CarouselSection />
           <AboutSection
             resumeData={resumeData}
             language={language}
@@ -130,11 +124,7 @@ export default async function Home() {
             resumeData={resumeData}
             translations={translations}
           />
-          <DocumentsSection
-            documentsData={documentsData}
-            settings={settings}
-            translations={translations}
-          />
+          <DocumentsSection />
         </main>
         <Footer translations={translations} resumeData={resumeData} language={language} />
       </div>

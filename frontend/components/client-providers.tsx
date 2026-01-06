@@ -1,8 +1,8 @@
 "use client"
 
-import { createContext, useContext, useState, useEffect, type ReactNode } from "react"
+import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from "react"
 import { useRouter } from "next/navigation"
-import { type Settings, type ResumeData } from "@/lib/api"
+import { type Settings, type ResumeData, type CarouselItem, type DocumentItem, fetchCarousel, fetchDocuments } from "@/lib/api"
 import { AIChatButton } from "@/components/ai-chat-button"
 import { ScrollToTop } from "@/components/scroll-to-top"
 
@@ -15,6 +15,10 @@ interface ClientContextType {
   translations: Record<string, string>
   t: (key: string) => string
   resumeData: ResumeData | null
+  carouselData: CarouselItem[]
+  carouselLoading: boolean
+  documentsData: DocumentItem[]
+  documentsLoading: boolean
 }
 
 const ClientContext = createContext<ClientContextType | undefined>(undefined)
@@ -70,6 +74,33 @@ export function ClientProviders({ children, settings, language: initialLanguage,
   const [mounted, setMounted] = useState(false)
   const [aiChatOpen, setAiChatOpen] = useState(false)
 
+  // Media data loaded on client
+  const [carouselData, setCarouselData] = useState<CarouselItem[]>([])
+  const [carouselLoading, setCarouselLoading] = useState(true)
+  const [documentsData, setDocumentsData] = useState<DocumentItem[]>([])
+  const [documentsLoading, setDocumentsLoading] = useState(true)
+
+  // Load media data on client
+  const loadMediaData = useCallback(async (lang: string) => {
+    // Load carousel and documents in parallel
+    setCarouselLoading(true)
+    setDocumentsLoading(true)
+
+    try {
+      const [carousel, documents] = await Promise.all([
+        fetchCarousel(lang),
+        fetchDocuments(lang)
+      ])
+      setCarouselData(carousel)
+      setDocumentsData(documents)
+    } catch (error) {
+      console.error("Failed to load media data:", error)
+    } finally {
+      setCarouselLoading(false)
+      setDocumentsLoading(false)
+    }
+  }, [])
+
   useEffect(() => {
     setMounted(true)
 
@@ -85,7 +116,10 @@ export function ClientProviders({ children, settings, language: initialLanguage,
     } else {
       document.documentElement.setAttribute("data-color-scheme", "blue")
     }
-  }, [settings.theme])
+
+    // Load media data on client
+    loadMediaData(initialLanguage)
+  }, [settings.theme, initialLanguage, loadMediaData])
 
   const toggleTheme = () => {
     const newTheme = theme === "light" ? "dark" : "light"
@@ -98,13 +132,15 @@ export function ClientProviders({ children, settings, language: initialLanguage,
     setLanguageState(lang)
     // Set cookie and refresh to get new server-rendered content
     document.cookie = `language=${lang};path=/;max-age=31536000`
+    // Reload media data for new language
+    loadMediaData(lang)
     router.refresh()
   }
 
   const t = (key: string): string => translations[key] || key
 
   return (
-    <ClientContext.Provider value={{ theme, toggleTheme, language, setLanguage, settings, translations, t, resumeData }}>
+    <ClientContext.Provider value={{ theme, toggleTheme, language, setLanguage, settings, translations, t, resumeData, carouselData, carouselLoading, documentsData, documentsLoading }}>
       {children}
       {mounted && (
         <>

@@ -4,7 +4,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { SectionWrapper } from "@/components/section-wrapper"
 import { ChevronLeft, ChevronRight, Play } from "lucide-react"
-import { type CarouselItem, type Settings } from "@/lib/api"
+import { useClient } from "@/components/client-providers"
 
 function getYouTubeVideoId(url: string): string | null {
   const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/
@@ -51,19 +51,22 @@ function CarouselSkeleton() {
   )
 }
 
-interface CarouselSectionProps {
-  carouselData: CarouselItem[]
-  settings: Settings
-  translations: Record<string, string>
-}
-
-export function CarouselSection({ carouselData, settings, translations }: CarouselSectionProps) {
-  const t = (key: string) => translations[key] || key
+export function CarouselSection() {
+  const { carouselData, carouselLoading, settings, t } = useClient()
   const [currentIndex, setCurrentIndex] = useState(0)
 
   // Check if carousel should be shown
   if (settings.show_carousel === "0") {
     return null
+  }
+
+  // Show skeleton while loading
+  if (carouselLoading) {
+    return (
+      <SectionWrapper id="carousel" title={t("carouselTitle")} className="bg-white dark:bg-background">
+        <CarouselSkeleton />
+      </SectionWrapper>
+    )
   }
 
   if (!carouselData || carouselData.length === 0) {

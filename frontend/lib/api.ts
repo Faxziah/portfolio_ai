@@ -187,6 +187,38 @@ export async function fetchResume(lang: string = "en"): Promise<ResumeData> {
   return response.json()
 }
 
+export async function fetchCarousel(lang: string = "en"): Promise<CarouselItem[]> {
+  const response = await fetch(`${API_BASE_URL}${API_ENDPOINTS.CAROUSEL}?lang=${lang}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+  })
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch carousel data: ${response.statusText}`)
+  }
+
+  return response.json()
+}
+
+export async function fetchDocuments(lang: string = "en"): Promise<DocumentItem[]> {
+  const response = await fetch(`${API_BASE_URL}${API_ENDPOINTS.DOCUMENTS}?lang=${lang}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+  })
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch documents data: ${response.statusText}`)
+  }
+
+  return response.json()
+}
+
 export async function sendChatMessage(
   message: string,
   chatHistory: Array<{ role: string; parts: string[] }> = [],

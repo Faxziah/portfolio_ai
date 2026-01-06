@@ -6,22 +6,44 @@ import { Button } from "@/components/ui/button"
 import { SectionWrapper } from "@/components/section-wrapper"
 import { ChevronDown, ChevronUp, X, ZoomIn } from "lucide-react"
 import { ITEMS_DISPLAY_LIMIT } from "@/lib/constants"
-import { type DocumentItem, type Settings } from "@/lib/api"
+import { useClient } from "@/components/client-providers"
 
-interface DocumentsSectionProps {
-  documentsData: DocumentItem[]
-  settings: Settings
-  translations: Record<string, string>
+function DocumentsSkeleton() {
+  return (
+    <div className="max-w-6xl mx-auto">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {[1, 2, 3, 4].map((i) => (
+          <div key={i} className="overflow-hidden rounded-lg border bg-card">
+            <div className="h-[250px] bg-muted animate-pulse flex items-center justify-center">
+              <div className="w-12 h-12 border-4 border-muted-foreground/20 border-t-primary rounded-full animate-spin" />
+            </div>
+            <div className="p-3">
+              <div className="h-4 bg-muted animate-pulse rounded w-3/4" />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
 }
 
-export function DocumentsSection({ documentsData, settings, translations }: DocumentsSectionProps) {
-  const t = (key: string) => translations[key] || key
+export function DocumentsSection() {
+  const { documentsData, documentsLoading, settings, t } = useClient()
   const [showAll, setShowAll] = useState(false)
   const [lightboxImage, setLightboxImage] = useState<{ src: string; description: string } | null>(null)
 
   // Check if documents should be shown
   if (settings.show_documents === "0") {
     return null
+  }
+
+  // Show skeleton while loading
+  if (documentsLoading) {
+    return (
+      <SectionWrapper id="documents" title={t("documentsTitle")} background="muted">
+        <DocumentsSkeleton />
+      </SectionWrapper>
+    )
   }
 
   if (!documentsData || documentsData.length === 0) {
