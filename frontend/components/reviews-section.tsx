@@ -24,10 +24,13 @@ function ReviewCard({ review, language, translations }: ReviewCardProps) {
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
-    return date.toLocaleDateString(language === 'ru' ? 'ru-RU' : language === 'zh' ? 'zh-CN' : 'en-US', {
+    // Use UTC to avoid hydration mismatch between server and client
+    const locale = language === 'ru' ? 'ru-RU' : language === 'zh' ? 'zh-CN' : 'en-US'
+    return date.toLocaleDateString(locale, {
       year: 'numeric',
       month: 'long',
-      day: 'numeric'
+      day: 'numeric',
+      timeZone: 'UTC'
     })
   }
 
