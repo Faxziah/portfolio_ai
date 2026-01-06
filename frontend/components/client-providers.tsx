@@ -132,8 +132,6 @@ export function ClientProviders({ children, settings, language: initialLanguage,
     setLanguageState(lang)
     // Set cookie and refresh to get new server-rendered content
     document.cookie = `language=${lang};path=/;max-age=31536000`
-    // Reload media data for new language
-    loadMediaData(lang)
     router.refresh()
   }
 
