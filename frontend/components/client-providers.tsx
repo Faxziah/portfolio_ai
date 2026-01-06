@@ -110,11 +110,9 @@ export function ClientProviders({ children, settings, language: initialLanguage,
     setTheme(initialTheme)
     document.documentElement.classList.toggle("dark", initialTheme === "dark")
 
-    // Apply color scheme from settings
+    // Apply color scheme from settings (already applied in SSR, but reapply for hydration consistency)
     if (settings.theme) {
       applyTheme(settings.theme)
-    } else {
-      document.documentElement.setAttribute("data-color-scheme", "blue")
     }
 
     // Load media data on client

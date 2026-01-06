@@ -168,7 +168,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
     const initialTheme = savedTheme || "light"
     setTheme(initialTheme)
     document.documentElement.classList.toggle("dark", initialTheme === "dark")
-    document.documentElement.setAttribute("data-color-scheme", "blue")
 
     // Fetch CSRF token for POST requests
     fetchCsrfToken()

@@ -154,13 +154,10 @@
   --accent: oklch(0.58 0.27 205);
 }
 
-/* Custom Theme - colors set via JavaScript inline styles */
+/* Custom Theme - colors set via inline styles from server */
 :root[data-color-scheme="custom"] {
-  /* Primary, secondary, accent are set dynamically via JS */
-  /* Fallback to blue if JS fails */
-  --primary: oklch(0.62 0.22 264);
-  --secondary: oklch(0.58 0.24 292);
-  --accent: oklch(0.55 0.25 240);
+  /* Primary, secondary, accent are set via inline <style> tag from SSR */
+  /* No fallback - colors come from server */
 }
 
 :root[data-color-scheme="custom"].dark {

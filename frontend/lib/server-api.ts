@@ -8,7 +8,7 @@ export type Translations = Record<string, string>
 
 export async function getSettings(): Promise<Settings> {
   const response = await fetch(`${API_URL}/api/settings/`, {
-    next: { revalidate: 60 }, // Cache for 60 seconds
+    cache: 'no-store', // Don't cache - theme changes should apply immediately
   })
   if (!response.ok) {
     console.error("Failed to fetch settings:", response.statusText)
