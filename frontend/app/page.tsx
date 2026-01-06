@@ -2,6 +2,9 @@ import { cookies } from "next/headers"
 import { type Metadata } from "next"
 import { getSettings, getTranslations, getResumeData } from "@/lib/server-api"
 
+// Don't prerender - requires backend connection
+export const dynamic = 'force-dynamic'
+
 export async function generateMetadata(): Promise<Metadata> {
   const cookieStore = await cookies()
   const settings = await getSettings()

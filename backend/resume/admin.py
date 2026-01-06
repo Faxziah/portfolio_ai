@@ -2,9 +2,32 @@ from django.contrib import admin
 from django import forms
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
+from django.contrib import messages
+from django.conf import settings as django_settings
 import base64
+import requests
 from .models import Resume, Language, Skill, Experience, Education, Certificate, Project, ContactInfo, Visit, Setting, Translation, Carousel, Review, Price, Document
+
+
+def reset_cache_view(request):
+    """Reset Next.js cache - called from admin."""
+    if not request.user.is_staff:
+        return HttpResponse("Forbidden", status=403)
+
+    try:
+        response = requests.post(
+            f"{django_settings.FRONTEND_URL}/api/revalidate",
+            timeout=10
+        )
+        if response.status_code == 200:
+            messages.success(request, "Cache successfully reset!")
+        else:
+            messages.error(request, f"Failed to reset cache: {response.text}")
+    except requests.RequestException as e:
+        messages.error(request, f"Failed to connect to frontend: {str(e)}")
+
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/admin/'))
 
 
 @admin.register(Resume)

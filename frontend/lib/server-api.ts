@@ -8,7 +8,7 @@ export type Translations = Record<string, string>
 
 export async function getSettings(): Promise<Settings> {
   const response = await fetch(`${API_URL}/api/settings/`, {
-    cache: 'no-store', // Don't cache - theme changes should apply immediately
+    next: { revalidate: 3600 },
   })
   if (!response.ok) {
     console.error("Failed to fetch settings:", response.statusText)
@@ -19,7 +19,7 @@ export async function getSettings(): Promise<Settings> {
 
 export async function getTranslations(lang: string): Promise<Translations> {
   const response = await fetch(`${API_URL}/api/translations/?lang=${lang}`, {
-    next: { revalidate: 60 },
+    next: { revalidate: 3600 },
   })
   if (!response.ok) {
     console.error("Failed to fetch translations:", response.statusText)
@@ -30,7 +30,7 @@ export async function getTranslations(lang: string): Promise<Translations> {
 
 export async function getResumeData(lang: string): Promise<ResumeData | null> {
   const response = await fetch(`${API_URL}/api/resume/?lang=${lang}`, {
-    next: { revalidate: 60 },
+    next: { revalidate: 3600 },
   })
   if (!response.ok) {
     console.error("Failed to fetch resume:", response.statusText)
@@ -41,7 +41,7 @@ export async function getResumeData(lang: string): Promise<ResumeData | null> {
 
 export async function getCarouselData(lang: string): Promise<CarouselItem[]> {
   const response = await fetch(`${API_URL}/api/resume/carousel/?lang=${lang}`, {
-    next: { revalidate: 300 }, // Cache for 5 minutes (media changes rarely)
+    next: { revalidate: 3600 },
   })
   if (!response.ok) {
     console.error("Failed to fetch carousel:", response.statusText)
@@ -52,7 +52,7 @@ export async function getCarouselData(lang: string): Promise<CarouselItem[]> {
 
 export async function getDocumentsData(lang: string): Promise<DocumentItem[]> {
   const response = await fetch(`${API_URL}/api/resume/documents/?lang=${lang}`, {
-    next: { revalidate: 300 },
+    next: { revalidate: 3600 },
   })
   if (!response.ok) {
     console.error("Failed to fetch documents:", response.statusText)

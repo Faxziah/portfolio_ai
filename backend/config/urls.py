@@ -21,6 +21,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.conf.urls.i18n import i18n_patterns
 from django.http import HttpResponse
+from resume.admin import reset_cache_view
 
 
 def home_view(request):
@@ -33,6 +34,7 @@ def home_view(request):
 urlpatterns = [
     path("", home_view, name="home"),
     path("i18n/", include("django.conf.urls.i18n")),
+    path("admin/reset-cache/", reset_cache_view, name="admin_reset_cache"),
     path("admin/", admin.site.urls),
     path("api/ai/", include("ai.urls")),
     path("api/", include("resume.urls")),

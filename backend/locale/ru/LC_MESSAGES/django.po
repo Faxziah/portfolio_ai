@@ -506,3 +506,7 @@ msgstr "запись журнала"
 
 msgid "log entries"
 msgstr "записи журнала"
+
+# Cache
+msgid "Reset Cache"
+msgstr "Сбросить кеш"

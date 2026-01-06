@@ -140,6 +140,9 @@ REST_FRAMEWORK = {
     ],
 }
 
+# Frontend cache revalidation
+FRONTEND_URL = os.getenv("FRONTEND_URL")
+
 LOG_DIR = BASE_DIR / "logs"
 LOG_DIR.mkdir(exist_ok=True)
 

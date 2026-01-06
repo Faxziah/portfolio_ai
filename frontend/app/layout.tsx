@@ -3,6 +3,9 @@ import type { Metadata } from "next"
 
 import "@/app/globals.css"
 
+// Don't prerender - layout fetches from backend
+export const dynamic = 'force-dynamic'
+
 import { Geist, Geist_Mono, Geist as V0_Font_Geist, Geist_Mono as V0_Font_Geist_Mono, Source_Serif_4 as V0_Font_Source_Serif_4 } from 'next/font/google'
 import { getSettings } from "@/lib/server-api"
 
