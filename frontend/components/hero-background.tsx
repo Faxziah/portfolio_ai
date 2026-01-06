@@ -6,8 +6,14 @@ export function HeroBackground() {
   const [mounted, setMounted] = useState(false)
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
 
+  // First effect: just set mounted after hydration
   useEffect(() => {
     setMounted(true)
+  }, [])
+
+  // Second effect: set up mouse tracking only after mounted
+  useEffect(() => {
+    if (!mounted) return
 
     let rafId: number | null = null
     const handleMouseMove = (e: MouseEvent) => {
@@ -22,7 +28,7 @@ export function HeroBackground() {
       window.removeEventListener("mousemove", handleMouseMove)
       if (rafId) cancelAnimationFrame(rafId)
     }
-  }, [])
+  }, [mounted])
 
   return (
     <div className="absolute inset-0 -z-10 pointer-events-none">
