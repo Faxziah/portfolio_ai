@@ -21,7 +21,7 @@ class Resume(models.Model):
         unique_together = [["language"]]
 
     def __str__(self):
-        return f"Resume ({self.language})"
+        return f"{self.lastname} {self.firstname}"
 
     @classmethod
     def load(cls, language="en"):
