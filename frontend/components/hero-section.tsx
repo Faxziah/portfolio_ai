@@ -1,5 +1,6 @@
 import { type ResumeData } from "@/lib/api"
 import { HeroButtons } from "./hero-buttons"
+import { HeroBackground } from "./hero-background"
 
 interface HeroSectionProps {
   resumeData: ResumeData
@@ -16,11 +17,7 @@ export function HeroSection({ resumeData, language, translations }: HeroSectionP
 
   return (
     <section className="min-h-screen flex items-center justify-center relative pt-20 overflow-hidden">
-      <div className="absolute inset-0 -z-10">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-primary/20 rounded-full blur-3xl animate-float" />
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-secondary/20 rounded-full blur-3xl animate-float [animation-delay:1s]" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-accent/10 rounded-full blur-3xl animate-float [animation-delay:2s]" />
-      </div>
+      <HeroBackground />
 
       <div className="container mx-auto px-4 text-center">
         <div className="animate-fade-in">
