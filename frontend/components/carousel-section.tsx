@@ -129,7 +129,7 @@ export function CarouselSection() {
                     </div>
                   )}
                   {item.description && (
-                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
+                    <div className="absolute top-0 left-0 right-0 bg-gradient-to-b from-black/70 to-transparent p-4 pointer-events-none">
                       <h3 className="text-white text-lg font-semibold">{item.description}</h3>
                     </div>
                   )}
@@ -182,7 +182,7 @@ export function CarouselSection() {
             {items.map((item, index) => (
               <button
                 key={item.id}
-                className={`flex-shrink-0 rounded-lg overflow-hidden border-2 transition-colors ${
+                className={`flex-shrink-0 rounded-lg overflow-hidden border-2 transition-colors cursor-pointer ${
                   index === currentIndex ? "border-primary" : "border-transparent"
                 }`}
                 onClick={() => goToSlide(index)}
