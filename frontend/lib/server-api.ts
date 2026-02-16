@@ -2,7 +2,7 @@ import { type ResumeData, type Settings, type CarouselItem, type DocumentItem } 
 
 // Server-side API URL - use internal Docker network (backend:8000) for SSR
 // NEXT_PUBLIC_API_URL is for client-side, API_URL is for server-side
-const API_URL = process.env.API_URL || "http://backend:8000"
+const API_URL = process.env.API_URL
 
 export type Translations = Record<string, string>
 
